@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CalorieScan</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="css/common.css">
+<link rel="stylesheet" href="css/dashboard.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+const ctx=document.getElementById('mealChart');
+
+new Chart(ctx,{
+
+type:'doughnut',
+
+data:{
+
+labels:[
+'Breakfast',
+'Lunch',
+'Dinner',
+'Snack'
+],
+
+datasets:[{
+
+data:[
+320,
+580,
+350,
+0
+]
+
+}]
+
+},
+
+options:{
+
+plugins:{
+
+legend:{
+position:'right'
+}
+
+}
+
+}
+
+});
+
+</script>
+<body>
+
+<div class="wrapper">
+
+    <aside class="sidebar">
+
+        <h3>🌙 CalorieScan</h3>
+
+        <ul>
+
+            <li class="active">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </li>
+
+            <li>
+                <a href="scan.html" style="text-decoration:none; color:inherit;">
+                  <i class="fa-solid fa-camera"></i>
+                   Scan Food
+                </a>
+           </li> 
+
+            <li>
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Meal History
+            </li>
+
+            <li>
+                <i class="fa-solid fa-chart-column"></i>
+                Statistics
+            </li>
+
+            <li>
+                <i class="fa-solid fa-bullseye"></i>
+                Goal
+            </li>
+
+            <li>
+                <i class="fa-solid fa-user"></i>
+                Profile
+            </li>
+
+            <li>
+                <i class="fa-solid fa-gear"></i>
+                Settings
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <main class="content">
+
+<h2>Good Morning, Atiyah 🌙</h2>
+
+<p>Let's check today's progress.</p>
+
+<div class="top-cards">
+
+    <div class="card calories">
+
+        <h4>Today's Calories</h4>
+
+        <h1>1250 <span>kcal</span></h1>
+
+        <p>Goal : 2000 kcal</p>
+
+        <div class="progress">
+
+            <div class="progress-bar"
+                 style="width:62%">
+            </div>
+
+        </div>
+
+        <small>750 kcal Remaining</small>
+
+    </div>
+
+    <div class="card">
+
+        <h4>Calories by Meal</h4>
+
+        <canvas id="mealChart"></canvas>
+
+    </div>
+
+</div>
+
+</main>
+
+</div>
+
+</body>
+</html>

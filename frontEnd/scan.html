@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Scan Food</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="scan-page">
+
+    <h1>🍽 Scan Your Food</h1>
+
+    <p>Upload an image to estimate calories.</p>
+
+    <div class="upload-box">
+
+        <label for="imageInput" class="upload-area">
+
+            <img id="preview"
+                 src="https://placehold.co/350x250?text=Upload+Food"
+                 alt="Preview">
+
+            <p>Click to upload food image</p>
+
+        </label>
+
+        <input
+            type="file"
+            id="imageInput"
+            accept="image/*"
+            hidden>
+
+        <button id="scanBtn">
+            🔍 Scan Food
+        </button>
+
+        <p id="loading" style="display:none;">
+            ⏳ Scanning...
+        </p>
+
+        <div class="result-card">
+
+            <h2>Prediction Result</h2>
+
+            <hr>
+
+            <p><strong>Food :</strong> <span id="foodName">-</span></p>
+
+            <p><strong>Calories :</strong> <span id="calories">-</span></p>
+
+            <p><strong>Protein :</strong> <span id="protein">-</span></p>
+
+            <p><strong>Carbohydrate :</strong> <span id="carb">-</span></p>
+
+            <p><strong>Fat :</strong> <span id="fat">-</span></p>
+
+            <p><strong>Confidence :</strong> <span id="confidence">-</span></p>
+
+            <button id="addMeal">
+                Add to Meal
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="js/script.js"></script>
+
+</body>
+
+</html>

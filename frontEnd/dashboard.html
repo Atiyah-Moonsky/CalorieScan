@@ -1,164 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Dashboard - CalorieScan</title>
 
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link rel="stylesheet" href="css/common.css">
-<link rel="stylesheet" href="css/dashboard.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
 
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="css/dashboard.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
 </head>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-
-const ctx=document.getElementById('mealChart');
-
-new Chart(ctx,{
-
-type:'doughnut',
-
-data:{
-
-labels:[
-'Breakfast',
-'Lunch',
-'Dinner',
-'Snack'
-],
-
-datasets:[{
-
-data:[
-320,
-580,
-350,
-0
-]
-
-}]
-
-},
-
-options:{
-
-plugins:{
-
-legend:{
-position:'right'
-}
-
-}
-
-}
-
-});
-
-</script>
 <body>
 
-<div class="wrapper">
+<div class="dashboard-wrapper">
+
+    <!-- ================= SIDEBAR ================= -->
 
     <aside class="sidebar">
 
-        <h3>🌙 CalorieScan</h3>
+        <div class="logo">
+            🌙 <span>CalorieScan</span>
+        </div>
 
-        <ul>
+        <nav class="sidebar-menu">
 
-            <li class="active">
+            <a href="dashboard.html" class="menu-item active">
                 <i class="fa-solid fa-house"></i>
-                Dashboard
-            </li>
+                <span>Dashboard</span>
+            </a>
 
-            <li>
-                <a href="scan.html" style="text-decoration:none; color:inherit;">
-                  <i class="fa-solid fa-camera"></i>
-                   Scan Food
-                </a>
-           </li> 
+            <a href="scan.html" class="menu-item">
+                <i class="fa-solid fa-camera"></i>
+                <span>Scan Food</span>
+            </a>
 
-            <li>
+            <a href="#" class="menu-item">
                 <i class="fa-solid fa-clock-rotate-left"></i>
-                Meal History
-            </li>
+                <span>Meal History</span>
+            </a>
 
-            <li>
+            <a href="#" class="menu-item">
                 <i class="fa-solid fa-chart-column"></i>
-                Statistics
-            </li>
+                <span>Statistics</span>
+            </a>
 
-            <li>
+            <a href="#" class="menu-item">
                 <i class="fa-solid fa-bullseye"></i>
-                Goal
-            </li>
+                <span>Goal</span>
+            </a>
 
-            <li>
+            <a href="#" class="menu-item">
                 <i class="fa-solid fa-user"></i>
-                Profile
-            </li>
+                <span>Profile</span>
+            </a>
 
-            <li>
+            <a href="#" class="menu-item">
                 <i class="fa-solid fa-gear"></i>
-                Settings
-            </li>
+                <span>Settings</span>
+            </a>
 
-        </ul>
+        </nav>
 
     </aside>
 
-    <main class="content">
 
-<h2>Good Morning, Atiyah 🌙</h2>
+    <!-- ================= MAIN CONTENT ================= -->
 
-<p>Let's check today's progress.</p>
+    <main class="main-content">
 
-<div class="top-cards">
+        <!-- Header -->
 
-    <div class="card calories">
+        <div class="dashboard-header">
 
-        <h4>Today's Calories</h4>
+            <div>
+                <h1>Good Morning, Atiyah 🌙</h1>
 
-        <h1>1250 <span>kcal</span></h1>
+                <p>
+                    Let's check today's progress.
+                </p>
+            </div>
 
-        <p>Goal : 2000 kcal</p>
-
-        <div class="progress">
-
-            <div class="progress-bar"
-                 style="width:62%">
+            <div class="date-box">
+                <i class="fa-regular fa-calendar"></i>
+                <span id="todayDate"></span>
             </div>
 
         </div>
 
-        <small>750 kcal Remaining</small>
 
-    </div>
+        <!-- ================= TOP CARDS ================= -->
 
-    <div class="card">
+        <section class="top-grid">
 
-        <h4>Calories by Meal</h4>
 
-        <canvas id="mealChart"></canvas>
+            <!-- Today's Calories -->
 
-    </div>
+            <div class="dashboard-card calorie-card">
+
+                <div class="card-title">
+                    <h2>Today's Calories</h2>
+
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+
+                <div class="calorie-number">
+
+                    <span id="totalCalories">1250</span>
+
+                    <small>kcal</small>
+
+                </div>
+
+                <p class="goal-text">
+                    Goal : <span id="dailyGoal">2000</span> kcal
+                </p>
+
+
+                <!-- Progress -->
+
+                <div class="progress-container">
+
+                    <div
+                        class="progress-fill"
+                        id="calorieProgress"
+                    ></div>
+
+                </div>
+
+                <p class="remaining" id="remainingCalories">
+                    750 kcal Remaining
+                </p>
+
+            </div>
+
+
+            <!-- Calories by Meal -->
+
+            <div class="dashboard-card meal-chart-card">
+
+                <div class="card-title">
+
+                    <h2>Calories by Meal</h2>
+
+                    <i class="fa-solid fa-chart-pie"></i>
+
+                </div>
+
+                <div class="chart-container">
+
+                    <canvas id="mealChart"></canvas>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= RECENT MEALS ================= -->
+
+        <section class="dashboard-card recent-meals">
+
+            <div class="card-title">
+
+                <h2>
+                    🍽️ Recent Meals
+                </h2>
+
+                <button
+                    class="view-all-btn"
+                    id="viewAllMeals"
+                >
+                    View All
+                </button>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Food</th>
+
+                            <th>Calories</th>
+
+                            <th>Meal</th>
+
+                            <th>Time</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="mealTableBody">
+
+                        <!-- JavaScript will insert meals here -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= WEEKLY CALORIES ================= -->
+
+        <section class="dashboard-card weekly-card">
+
+            <div class="card-title">
+
+                <h2>
+                    📈 Weekly Calories
+                </h2>
+
+                <span class="weekly-label">
+                    Last 7 Days
+                </span>
+
+            </div>
+
+
+            <div class="weekly-chart-container">
+
+                <canvas id="weeklyChart"></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= NUTRITION SUMMARY ================= -->
+
+        <section class="nutrition-grid">
+
+
+            <div class="nutrition-card">
+
+                <div class="nutrition-icon protein-icon">
+                    💪
+                </div>
+
+                <div>
+
+                    <p>Protein</p>
+
+                    <h3 id="proteinValue">
+                        45 g
+                    </h3>
+
+                    <small>
+                        Today's intake
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="nutrition-card">
+
+                <div class="nutrition-icon carb-icon">
+                    🍞
+                </div>
+
+                <div>
+
+                    <p>Carbohydrate</p>
+
+                    <h3 id="carbValue">
+                        120 g
+                    </h3>
+
+                    <small>
+                        Today's intake
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="nutrition-card">
+
+                <div class="nutrition-icon fat-icon">
+                    🥑
+                </div>
+
+                <div>
+
+                    <p>Fat</p>
+
+                    <h3 id="fatValue">
+                        38 g
+                    </h3>
+
+                    <small>
+                        Today's intake
+                    </small>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- Footer -->
+
+        <footer class="dashboard-footer">
+
+            <p>
+                © 2026 CalorieScan AI
+            </p>
+
+            <p>
+                Eat smart. Live healthy. 💜
+            </p>
+
+        </footer>
+
+    </main>
 
 </div>
 
-</main>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-</div>
+<!-- Dashboard JavaScript -->
+<script src="js/dashboard.js"></script>
 
 </body>
 </html>

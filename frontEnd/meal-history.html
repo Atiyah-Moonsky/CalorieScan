@@ -22,7 +22,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     >
 
-    <!-- CSS -->
+    <!-- Dashboard CSS -->
     <link rel="stylesheet" href="css/dashboard.css">
 
 </head>
@@ -44,7 +44,8 @@
 
         <nav class="sidebar-menu">
 
-            <a href="dashboard.html" class="menu-item">
+            <a href="dashboard.html"
+               class="menu-item">
 
                 <i class="fa-solid fa-house"></i>
 
@@ -53,7 +54,8 @@
             </a>
 
 
-            <a href="scan.html" class="menu-item">
+            <a href="scan.html"
+               class="menu-item">
 
                 <i class="fa-solid fa-camera"></i>
 
@@ -72,7 +74,8 @@
             </a>
 
 
-            <a href="#" class="menu-item">
+            <a href="#"
+               class="menu-item">
 
                 <i class="fa-solid fa-chart-column"></i>
 
@@ -81,7 +84,8 @@
             </a>
 
 
-            <a href="#" class="menu-item">
+            <a href="#"
+               class="menu-item">
 
                 <i class="fa-solid fa-bullseye"></i>
 
@@ -90,7 +94,8 @@
             </a>
 
 
-            <a href="#" class="menu-item">
+            <a href="profile.html"
+               class="menu-item">
 
                 <i class="fa-solid fa-user"></i>
 
@@ -99,7 +104,8 @@
             </a>
 
 
-            <a href="#" class="menu-item">
+            <a href="#"
+               class="menu-item">
 
                 <i class="fa-solid fa-gear"></i>
 
@@ -118,7 +124,7 @@
     <main class="main-content">
 
 
-        <!-- Header -->
+        <!-- ================= HEADER ================= -->
 
         <div class="dashboard-header">
 
@@ -129,7 +135,7 @@
                 </h1>
 
                 <p>
-                    View the meals you have added.
+                    View all your scanned meals.
                 </p>
 
             </div>
@@ -151,6 +157,8 @@
 
         <section class="top-grid">
 
+
+            <!-- TOTAL MEALS -->
 
             <div class="dashboard-card">
 
@@ -181,6 +189,8 @@
 
 
 
+            <!-- TOTAL CALORIES -->
+
             <div class="dashboard-card">
 
                 <div class="card-title">
@@ -208,7 +218,6 @@
 
             </div>
 
-
         </section>
 
 
@@ -224,9 +233,11 @@
                     🍽️ All Meals
                 </h2>
 
+
                 <button
                     class="view-all-btn"
                     id="clearMeals"
+                    type="button"
                 >
                     Clear All
                 </button>
@@ -252,11 +263,19 @@
                             </th>
 
                             <th>
-                                Meal
+                                Protein
                             </th>
 
                             <th>
-                                Time
+                                Carbs
+                            </th>
+
+                            <th>
+                                Fat
+                            </th>
+
+                            <th>
+                                Date
                             </th>
 
                             <th>
@@ -270,8 +289,6 @@
 
                     <tbody id="historyTable">
 
-                        <!-- JavaScript -->
-
                     </tbody>
 
                 </table>
@@ -281,7 +298,8 @@
         </section>
 
 
-        <!-- Footer -->
+
+        <!-- ================= FOOTER ================= -->
 
         <footer class="dashboard-footer">
 
@@ -307,14 +325,19 @@
 <script>
 
 
-// Today's date
+// ========================================
+// TODAY DATE
+// ========================================
 
 const todayDate =
     document.getElementById("todayDate");
 
+
 if (todayDate) {
 
-    const today = new Date();
+    const today =
+        new Date();
+
 
     todayDate.textContent =
         today.toLocaleDateString(
@@ -330,25 +353,45 @@ if (todayDate) {
 
 
 
-// Get meals
+// ========================================
+// GET MEALS
+// ========================================
+
+// ใช้ชื่อเดียวกับ scan.js
 
 let meals =
     JSON.parse(
-        localStorage.getItem("meals")
+        localStorage.getItem(
+            "calorieScanMeals"
+        )
     ) || [];
 
 
 
-// Display meals
+// ========================================
+// DISPLAY MEALS
+// ========================================
 
 function displayMeals() {
 
     const table =
-        document.getElementById("historyTable");
+        document.getElementById(
+            "historyTable"
+        );
+
+
+    if (!table) {
+        return;
+    }
 
 
     table.innerHTML = "";
 
+
+
+    // ========================================
+    // NO MEALS
+    // ========================================
 
     if (meals.length === 0) {
 
@@ -356,10 +399,28 @@ function displayMeals() {
 
             <tr>
 
-                <td colspan="5"
-                    style="text-align:center; padding:30px;">
+                <td
+                    colspan="7"
+                    style="
+                        text-align:center;
+                        padding:40px;
+                    "
+                >
 
-                    No meals added yet 🍽️
+                    🍽️ No meals added yet.
+
+                    <br><br>
+
+                    <a
+                        href="scan.html"
+                        style="
+                            color:#7c3aed;
+                            font-weight:600;
+                            text-decoration:none;
+                        "
+                    >
+                        Scan your first meal →
+                    </a>
 
                 </td>
 
@@ -370,72 +431,149 @@ function displayMeals() {
     }
 
 
-    meals.forEach(function(meal, index) {
 
-        const row = document.createElement("tr");
+    // ========================================
+    // DISPLAY MEALS
+    // ========================================
 
-
-        row.innerHTML = `
-
-            <td>
-                ${meal.food}
-            </td>
-
-            <td>
-                ${meal.calories} kcal
-            </td>
-
-            <td>
-                ${meal.meal}
-            </td>
-
-            <td>
-                ${meal.time}
-            </td>
-
-            <td>
-
-                <button
-                    onclick="deleteMeal(${index})"
-                    style="
-                        border:none;
-                        background:#f3e8ff;
-                        color:#7c3aed;
-                        padding:7px 12px;
-                        border-radius:8px;
-                        cursor:pointer;
-                    "
-                >
-                    Delete
-                </button>
-
-            </td>
-
-        `;
+    meals
+        .slice()
+        .reverse()
+        .forEach(
+            function(meal, reverseIndex) {
 
 
-        table.appendChild(row);
+                // Original index
+                const index =
+                    meals.length -
+                    1 -
+                    reverseIndex;
 
-    });
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                // Date
+
+                let mealDate = "-";
+
+
+                if (meal.date) {
+
+                    const date =
+                        new Date(
+                            meal.date
+                        );
+
+
+                    mealDate =
+                        date.toLocaleString(
+                            "en-US",
+                            {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                            }
+                        );
+
+                }
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${meal.foodName || "-"}
+                    </td>
+
+
+                    <td>
+                        ${Number(
+                            meal.calories
+                        ) || 0} kcal
+                    </td>
+
+
+                    <td>
+                        ${meal.protein || "-"}
+                    </td>
+
+
+                    <td>
+                        ${meal.carb || "-"}
+                    </td>
+
+
+                    <td>
+                        ${meal.fat || "-"}
+                    </td>
+
+
+                    <td>
+                        ${mealDate}
+                    </td>
+
+
+                    <td>
+
+                        <button
+                            type="button"
+                            onclick="deleteMeal(${index})"
+                            style="
+                                border:none;
+                                background:#f3e8ff;
+                                color:#7c3aed;
+                                padding:7px 12px;
+                                border-radius:8px;
+                                cursor:pointer;
+                            "
+                        >
+
+                            Delete
+
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            }
+        );
 
 
 
-    // Total meals
+    // ========================================
+    // TOTAL MEALS
+    // ========================================
 
     document.getElementById(
         "totalMeals"
-    ).textContent = meals.length;
+    ).textContent =
+        meals.length;
 
 
 
-    // Total calories
+    // ========================================
+    // TOTAL CALORIES
+    // ========================================
 
     const totalCalories =
         meals.reduce(
             function(total, meal) {
 
                 return total +
-                    Number(meal.calories);
+                    (
+                        Number(
+                            meal.calories
+                        ) || 0
+                    );
 
             },
             0
@@ -444,21 +582,38 @@ function displayMeals() {
 
     document.getElementById(
         "historyCalories"
-    ).textContent = totalCalories;
+    ).textContent =
+        totalCalories;
 
 }
 
 
 
-// Delete meal
+// ========================================
+// DELETE MEAL
+// ========================================
 
 function deleteMeal(index) {
 
-    meals.splice(index, 1);
+    const confirmDelete =
+        confirm(
+            "Delete this meal?"
+        );
+
+
+    if (!confirmDelete) {
+        return;
+    }
+
+
+    meals.splice(
+        index,
+        1
+    );
 
 
     localStorage.setItem(
-        "meals",
+        "calorieScanMeals",
         JSON.stringify(meals)
     );
 
@@ -469,46 +624,67 @@ function deleteMeal(index) {
 
 
 
-// Clear all
+// ========================================
+// CLEAR ALL
+// ========================================
 
-document
-    .getElementById("clearMeals")
-    .addEventListener("click", function() {
-
-
-        if (meals.length === 0) {
-
-            return;
-
-        }
+const clearMeals =
+    document.getElementById(
+        "clearMeals"
+    );
 
 
-        const confirmDelete =
-            confirm(
-                "Delete all meal history?"
-            );
+if (clearMeals) {
+
+    clearMeals.addEventListener(
+        "click",
+        function() {
 
 
-        if (confirmDelete) {
+            if (meals.length === 0) {
+
+                alert(
+                    "There are no meals to delete."
+                );
+
+                return;
+
+            }
+
+
+            const confirmDelete =
+                confirm(
+                    "Delete ALL meal history?"
+                );
+
+
+            if (!confirmDelete) {
+                return;
+            }
+
 
             meals = [];
 
 
             localStorage.setItem(
-                "meals",
+                "calorieScanMeals",
                 JSON.stringify(meals)
             );
 
 
             displayMeals();
 
+
         }
+    );
 
-    });
+}
 
 
 
-// Start
+// ========================================
+// START
+// ========================================
 
 displayMeals();
 

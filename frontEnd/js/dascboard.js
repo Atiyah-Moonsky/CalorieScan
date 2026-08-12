@@ -23,6 +23,68 @@ function saveMeals() {
 
 
 // ===============================
+// GET DAILY CALORIE GOAL
+// ===============================
+
+function getDailyGoal() {
+
+    const savedGoal =
+        localStorage.getItem("dailyCalorieGoal");
+
+    return Number(savedGoal) || 2000;
+
+}
+
+
+// ===============================
+// LOAD PROFILE DATA
+// ===============================
+
+function loadProfileData() {
+
+    const profile =
+        JSON.parse(
+            localStorage.getItem("calorieProfile")
+        ) || {};
+
+
+    const userName =
+        document.getElementById("userName");
+
+    const dailyGoal =
+        document.getElementById("dailyGoal");
+
+
+    // User Name
+
+    if (
+        userName &&
+        profile.fullName
+    ) {
+
+        userName.textContent =
+            profile.fullName;
+
+    }
+
+
+    // Daily Goal
+
+    const goal =
+        getDailyGoal();
+
+
+    if (dailyGoal) {
+
+        dailyGoal.textContent =
+            goal;
+
+    }
+
+}
+
+
+// ===============================
 // DISPLAY MEALS
 // ===============================
 
@@ -54,7 +116,7 @@ function displayMeals() {
                 </td>
 
                 <td>
-                    Meal
+                    ${meal.meal || "Meal"}
                 </td>
 
                 <td>
@@ -74,6 +136,7 @@ function displayMeals() {
                 </td>
 
                 <td>
+
                     <button
                         type="button"
                         onclick="deleteMeal(${index})"
@@ -88,6 +151,7 @@ function displayMeals() {
                     >
                         DELETE
                     </button>
+
                 </td>
             `;
 
@@ -123,6 +187,8 @@ function deleteMeal(index) {
 
     updateMealChart();
 
+    updateWeeklyChart();
+
 }
 
 
@@ -156,6 +222,12 @@ function updateCalories() {
     });
 
 
+    // Get Goal from Profile
+
+    const goal =
+        getDailyGoal();
+
+
     const totalCalories =
         document.getElementById(
             "totalCalories"
@@ -169,6 +241,11 @@ function updateCalories() {
     const progress =
         document.getElementById(
             "calorieProgress"
+        );
+
+    const dailyGoal =
+        document.getElementById(
+            "dailyGoal"
         );
 
     const proteinValue =
@@ -187,6 +264,8 @@ function updateCalories() {
         );
 
 
+    // Total Calories
+
     if (totalCalories) {
 
         totalCalories.textContent =
@@ -195,22 +274,36 @@ function updateCalories() {
     }
 
 
+    // Daily Goal
+
+    if (dailyGoal) {
+
+        dailyGoal.textContent =
+            goal;
+
+    }
+
+
+    // Remaining Calories
+
     if (remainingCalories) {
 
         remainingCalories.textContent =
             Math.max(
-                2000 - total,
+                goal - total,
                 0
             ) + " kcal Remaining";
 
     }
 
 
+    // Progress Bar
+
     if (progress) {
 
         const percentage =
             Math.min(
-                (total / 2000) * 100,
+                (total / goal) * 100,
                 100
             );
 
@@ -220,6 +313,8 @@ function updateCalories() {
     }
 
 
+    // Protein
+
     if (proteinValue) {
 
         proteinValue.textContent =
@@ -228,6 +323,8 @@ function updateCalories() {
     }
 
 
+    // Carbohydrate
+
     if (carbValue) {
 
         carbValue.textContent =
@@ -235,6 +332,8 @@ function updateCalories() {
 
     }
 
+
+    // Fat
 
     if (fatValue) {
 
@@ -399,6 +498,115 @@ function updateWeeklyChart() {
     }
 
 
+    const scanMeals =
+        JSON.parse(
+            localStorage.getItem(
+                "calorieScanMeals"
+            )
+        ) || [];
+
+
+    const today =
+        new Date();
+
+
+    const labels = [];
+
+    const weeklyCalories = [];
+
+
+    // 7 DAYS
+
+    for (
+        let i = 6;
+        i >= 0;
+        i--
+    ) {
+
+        const date =
+            new Date(today);
+
+
+        date.setDate(
+            today.getDate() - i
+        );
+
+
+        const dayName =
+            date.toLocaleDateString(
+                "en-US",
+                {
+                    weekday: "short"
+                }
+            );
+
+
+        labels.push(
+            dayName
+        );
+
+
+        const dailyTotal =
+            scanMeals
+
+                .filter(meal => {
+
+                    if (!meal.date) {
+
+                        return false;
+
+                    }
+
+
+                    const mealDate =
+                        new Date(
+                            meal.date
+                        );
+
+
+                    return (
+
+                        mealDate.getFullYear() ===
+                        date.getFullYear()
+
+                        &&
+
+                        mealDate.getMonth() ===
+                        date.getMonth()
+
+                        &&
+
+                        mealDate.getDate() ===
+                        date.getDate()
+
+                    );
+
+                })
+
+                .reduce(
+                    (total, meal) => {
+
+                        return total +
+                            (
+                                Number(
+                                    meal.calories
+                                ) || 0
+                            );
+
+                    },
+                    0
+                );
+
+
+        weeklyCalories.push(
+            dailyTotal
+        );
+
+    }
+
+
+    // CREATE CHART
+
     weeklyChart =
         new Chart(
 
@@ -410,30 +618,16 @@ function updateWeeklyChart() {
 
                 data: {
 
-                    labels: [
-                        "Mon",
-                        "Tue",
-                        "Wed",
-                        "Thu",
-                        "Fri",
-                        "Sat",
-                        "Sun"
-                    ],
+                    labels:
+                        labels,
 
                     datasets: [{
 
                         label:
                             "Calories",
 
-                        data: [
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0,
-                            0
-                        ]
+                        data:
+                            weeklyCalories
 
                     }]
 
@@ -443,7 +637,18 @@ function updateWeeklyChart() {
 
                     responsive: true,
 
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero:
+                                true
+
+                        }
+
+                    }
 
                 }
 
@@ -490,37 +695,6 @@ function showDate() {
 
 
 // ===============================
-// USER NAME
-// ===============================
-
-function showUserName() {
-
-    const userName =
-        localStorage.getItem(
-            "calorieScanUserName"
-        );
-
-
-    const userNameElement =
-        document.getElementById(
-            "userName"
-        );
-
-
-    if (
-        userName &&
-        userNameElement
-    ) {
-
-        userNameElement.textContent =
-            userName;
-
-    }
-
-}
-
-
-// ===============================
 // START DASHBOARD
 // ===============================
 
@@ -528,9 +702,9 @@ document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        showDate();
+        loadProfileData();
 
-        showUserName();
+        showDate();
 
         displayMeals();
 

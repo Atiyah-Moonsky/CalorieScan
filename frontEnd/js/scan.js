@@ -45,6 +45,9 @@ const fatElement =
 const confidenceElement =
     document.getElementById("confidence");
 
+const mealTypeElement =
+    document.getElementById("mealType");
+
 
 // ========================================
 // DEBUG MESSAGE
@@ -53,10 +56,7 @@ const confidenceElement =
 function showDebug(message) {
 
     if (debugMessage) {
-
-        debugMessage.textContent =
-            message;
-
+        debugMessage.textContent = message;
     }
 
     console.log(message);
@@ -203,11 +203,13 @@ if (scanBtn) {
 
 
                     showDebug(
-                        "✅ Scan complete! Add to Meal 👇"
+                        "✅ Scan complete! Choose Meal Type 👇"
                     );
 
 
-                    // Store temporary result
+                    // ========================================
+                    // STORE TEMPORARY RESULT
+                    // ========================================
 
                     window.currentMeal = {
 
@@ -264,6 +266,16 @@ if (addMealBtn) {
             }
 
 
+            // ========================================
+            // GET MEAL TYPE
+            // ========================================
+
+            const mealType =
+                mealTypeElement
+                    ? mealTypeElement.value
+                    : "Lunch";
+
+
             showDebug(
                 "📡 Saving meal..."
             );
@@ -318,7 +330,10 @@ if (addMealBtn) {
                                         window.currentMeal.fat,
 
                                     confidence:
-                                        window.currentMeal.confidence
+                                        window.currentMeal.confidence,
+
+                                    meal:
+                                        mealType
 
                                 })
 
@@ -326,7 +341,9 @@ if (addMealBtn) {
                     );
 
 
-                // Get response
+                // ========================================
+                // GET RESPONSE
+                // ========================================
 
                 const text =
                     await response.text();
@@ -357,6 +374,12 @@ if (addMealBtn) {
                         error
                     );
 
+                    addMealBtn.disabled =
+                        false;
+
+                    addMealBtn.textContent =
+                        "➕ Add to Meal";
+
                     return;
 
                 }
@@ -378,7 +401,9 @@ if (addMealBtn) {
                     );
 
 
-                    // Save local backup
+                    // ========================================
+                    // SAVE LOCAL BACKUP
+                    // ========================================
 
                     const meals =
                         JSON.parse(
@@ -389,6 +414,9 @@ if (addMealBtn) {
 
 
                     meals.push({
+
+                        food:
+                            window.currentMeal.food_name,
 
                         foodName:
                             window.currentMeal.food_name,
@@ -408,8 +436,20 @@ if (addMealBtn) {
                         confidence:
                             window.currentMeal.confidence,
 
+                        meal:
+                            mealType,
+
                         date:
-                            new Date().toISOString()
+                            new Date().toISOString(),
+
+                        time:
+                            new Date().toLocaleTimeString(
+                                "en-US",
+                                {
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                }
+                            )
 
                     });
 
@@ -424,8 +464,15 @@ if (addMealBtn) {
                         "💾 Meal saved locally!"
                     );
 
+                    console.log(
+                        "🍽️ Meal Type:",
+                        mealType
+                    );
 
-                    // Reset button
+
+                    // ========================================
+                    // RESET BUTTON
+                    // ========================================
 
                     addMealBtn.disabled =
                         false;
@@ -433,15 +480,16 @@ if (addMealBtn) {
                     addMealBtn.textContent =
                         "➕ Added to Meal";
 
-
                 }
 
                 else {
 
                     showDebug(
                         "❌ " +
-                        (data.message ||
-                            "Meal was not saved.")
+                        (
+                            data.message ||
+                            "Meal was not saved."
+                        )
                     );
 
 
@@ -478,5 +526,199 @@ if (addMealBtn) {
 
         }
     );
+
+}
+
+// ========================================
+// CAMERA
+// ========================================
+
+const cameraBtn =
+    document.getElementById("cameraBtn");
+
+const cameraContainer =
+    document.getElementById("cameraContainer");
+
+const camera =
+    document.getElementById("camera");
+
+const captureBtn =
+    document.getElementById("captureBtn");
+
+const closeCameraBtn =
+    document.getElementById("closeCameraBtn");
+
+let cameraStream = null;
+
+
+// ========================================
+// OPEN CAMERA
+// ========================================
+
+if (cameraBtn) {
+
+    cameraBtn.addEventListener(
+        "click",
+        async function () {
+
+            try {
+
+                cameraStream =
+                    await navigator.mediaDevices.getUserMedia({
+                        video: true
+                    });
+
+                camera.srcObject =
+                    cameraStream;
+
+                cameraContainer.style.display =
+                    "block";
+
+                showDebug(
+                    "📷 Camera is ready!"
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Camera error:",
+                    error
+                );
+
+                showDebug(
+                    "❌ Cannot access camera."
+                );
+
+                alert(
+                    "Cannot access camera. Please allow camera permission."
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+// ========================================
+// CAPTURE PHOTO
+// ========================================
+
+if (captureBtn) {
+
+    captureBtn.addEventListener(
+        "click",
+        function () {
+
+            if (!cameraStream) {
+                return;
+            }
+
+
+            const canvas =
+                document.createElement("canvas");
+
+            canvas.width =
+                camera.videoWidth;
+
+            canvas.height =
+                camera.videoHeight;
+
+
+            const context =
+                canvas.getContext("2d");
+
+
+            context.drawImage(
+                camera,
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+
+            // Show captured image
+
+            preview.src =
+                canvas.toDataURL("image/png");
+
+            preview.style.display =
+                "block";
+
+
+            showDebug(
+                "📸 Photo captured!"
+            );
+
+
+            // Close camera
+
+            stopCamera();
+
+        }
+    );
+
+}
+
+
+// ========================================
+// CLOSE CAMERA
+// ========================================
+
+if (closeCameraBtn) {
+
+    closeCameraBtn.addEventListener(
+        "click",
+        function () {
+
+            stopCamera();
+
+            showDebug(
+                "📷 Camera closed."
+            );
+
+        }
+    );
+
+}
+
+
+// ========================================
+// STOP CAMERA
+// ========================================
+
+function stopCamera() {
+
+    if (cameraStream) {
+
+        cameraStream
+            .getTracks()
+            .forEach(
+                track => track.stop()
+            );
+
+        cameraStream = null;
+
+    }
+
+
+    if (camera) {
+
+        camera.srcObject =
+            null;
+
+    }
+
+
+    if (cameraContainer) {
+
+        cameraContainer.style.display =
+            "none";
+
+    }
 
 }

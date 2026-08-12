@@ -91,7 +91,7 @@
         <div class="dashboard-header">
 
             <div>
-                <h1>Good Morning, Atiyah 🌙</h1>
+                <h1>Good Morning, <span id="userName">User</span> 👋</h1>
 
                 <p>
                     Let's check today's progress.
@@ -356,11 +356,11 @@
 <!-- Dashboard JavaScript -->
 <script src="js/dashboard.js"></script>
 <script>
-const meals = JSON.parse(localStorage.getItem("calorieScanMeals")) || [];
+const dashboardMeals = JSON.parse(localStorage.getItem("calorieScanMeals")) || [];
 
 let total = 0;
 
-meals.forEach(meal => {
+dashboardMeals.forEach(meal => {
     total += Number(meal.calories) || 0;
 });
 
@@ -385,6 +385,19 @@ meals.slice().reverse().slice(0, 5).forEach(meal => {
     `;
 
 });
+</script>
+<script>
+
+const userName =
+    localStorage.getItem("calorieScanUserName");
+
+if (userName) {
+
+    document.getElementById("userName").textContent =
+        userName;
+
+}
+
 </script>
 
 </body>

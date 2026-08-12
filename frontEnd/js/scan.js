@@ -1,11 +1,13 @@
-// =========================================
-// CalorieScan Scan
-// =========================================
+// =========================
+// SCAN JS LOADED
+// =========================
+
+console.log("🟢 scan.js loaded!");
 
 
-// ===============================
-// ELEMENTS
-// ===============================
+// =========================
+// GET HTML ELEMENTS
+// =========================
 
 const imageInput =
     document.getElementById("imageInput");
@@ -19,293 +21,254 @@ const scanBtn =
 const loading =
     document.getElementById("loading");
 
-const cameraBtn =
-    document.getElementById("cameraBtn");
 
-const cameraContainer =
-    document.getElementById("cameraContainer");
+// =========================
+// CHECK ELEMENTS
+// =========================
 
-const camera =
-    document.getElementById("camera");
+console.log("imageInput:", imageInput);
 
-const captureBtn =
-    document.getElementById("captureBtn");
+console.log("preview:", preview);
 
-const closeCameraBtn =
-    document.getElementById("closeCameraBtn");
+console.log("scanBtn:", scanBtn);
+
+console.log("loading:", loading);
 
 
-// Camera stream
-let cameraStream = null;
+// =========================
+// IMAGE PREVIEW
+// =========================
 
+if (imageInput) {
 
-// ===============================
-// UPLOAD IMAGE
-// ===============================
+    imageInput.addEventListener(
+        "change",
+        function () {
 
-imageInput.addEventListener("change", function () {
+            const file =
+                this.files[0];
 
-    const file = imageInput.files[0];
+            if (file) {
 
-    if (!file) return;
+                preview.src =
+                    URL.createObjectURL(file);
 
-    const imageURL =
-        URL.createObjectURL(file);
+                console.log(
+                    "📷 Image selected!"
+                );
 
-    preview.src = imageURL;
+            }
 
-});
-
-
-// ===============================
-// OPEN CAMERA
-// ===============================
-
-cameraBtn.addEventListener("click", async function () {
-
-    try {
-
-        cameraStream =
-            await navigator.mediaDevices.getUserMedia({
-                video: {
-                    facingMode: "environment"
-                },
-                audio: false
-            });
-
-        camera.srcObject =
-            cameraStream;
-
-        cameraContainer.style.display =
-            "block";
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Cannot access camera. Please allow camera permission."
-        );
-
-    }
-
-});
-
-
-// ===============================
-// CAPTURE PHOTO
-// ===============================
-
-captureBtn.addEventListener("click", function () {
-
-    if (!cameraStream) return;
-
-
-    const canvas =
-        document.createElement("canvas");
-
-
-    canvas.width =
-        camera.videoWidth;
-
-    canvas.height =
-        camera.videoHeight;
-
-
-    const context =
-        canvas.getContext("2d");
-
-
-    context.drawImage(
-        camera,
-        0,
-        0,
-        canvas.width,
-        canvas.height
+        }
     );
-
-
-    // Convert image to preview
-    preview.src =
-        canvas.toDataURL("image/jpeg");
-
-
-    // Close camera
-    stopCamera();
-
-});
-
-
-// ===============================
-// CLOSE CAMERA
-// ===============================
-
-closeCameraBtn.addEventListener(
-    "click",
-    function () {
-
-        stopCamera();
-
-    }
-);
-
-
-// ===============================
-// STOP CAMERA
-// ===============================
-
-function stopCamera() {
-
-    if (cameraStream) {
-
-        cameraStream
-            .getTracks()
-            .forEach(function (track) {
-
-                track.stop();
-
-            });
-
-        cameraStream = null;
-    }
-
-
-    camera.srcObject = null;
-
-    cameraContainer.style.display =
-        "none";
 
 }
 
 
-// ===============================
+// =========================
 // SCAN FOOD
-// ===============================
+// =========================
 
-scanBtn.addEventListener(
-    "click",
-    function () {
+if (scanBtn) {
 
-        loading.style.display =
-            "block";
+    scanBtn.addEventListener(
+        "click",
+        async function () {
+
+            console.log(
+                "🔵 SCAN BUTTON CLICKED"
+            );
+            loading.style.display = "block";
 
 
-        setTimeout(function () {
+            // Show loading
 
             loading.style.display =
-                "none";
+                "block";
 
 
-            // ตัวอย่างผลลัพธ์
-            document.getElementById(
-                "foodName"
-            ).textContent =
-                "Fried Rice 🍚";
+            // Simulate AI scanning
+
+            setTimeout(
+                async function () {
+
+                    // Hide loading
+
+                    loading.style.display =
+                        "none";
 
 
-            document.getElementById(
-                "calories"
-            ).textContent =
-                "520 kcal";
+                    // =========================
+                    // AI RESULT
+                    // =========================
+
+                    const foodName =
+                        "Fried Rice 🍚";
+
+                    const calories =
+                        520;
+
+                    const protein =
+                        "14 g";
+
+                    const carb =
+                        "63 g";
+
+                    const fat =
+                        "18 g";
+
+                    const confidence =
+                        "97%";
 
 
-            document.getElementById(
-                "protein"
-            ).textContent =
-                "12 g";
+                    // =========================
+                    // SHOW RESULT
+                    // =========================
+
+                    document.getElementById(
+                        "foodName"
+                    ).textContent =
+                        foodName;
 
 
-            document.getElementById(
-                "carb"
-            ).textContent =
-                "75 g";
-
-
-            document.getElementById(
-                "fat"
-            ).textContent =
-                "18 g";
-
-
-            document.getElementById(
-                "confidence"
-            ).textContent =
-                "94%";
-
-
-        }, 1500);
-
-    }
-);
-
-
-// ===============================
-// ADD MEAL
-// ===============================
-
-const addMeal =
-    document.getElementById("addMeal");
-
-
-addMeal.addEventListener(
-    "click",
-    function () {
-
-        const newMeal = {
-
-            food:
-                document.getElementById(
-                    "foodName"
-                ).textContent,
-
-            calories:
-                parseInt(
                     document.getElementById(
                         "calories"
-                    ).textContent
-                ) || 0,
+                    ).textContent =
+                        calories + " kcal";
 
-            meal:
-                "Lunch",
 
-            time:
-                new Date().toLocaleTimeString(
-                    "en-US",
-                    {
-                        hour: "2-digit",
-                        minute: "2-digit"
+                    document.getElementById(
+                        "protein"
+                    ).textContent =
+                        protein;
+
+
+                    document.getElementById(
+                        "carb"
+                    ).textContent =
+                        carb;
+
+
+                    document.getElementById(
+                        "fat"
+                    ).textContent =
+                        fat;
+
+
+                    document.getElementById(
+                        "confidence"
+                    ).textContent =
+                        confidence;
+
+
+                    console.log(
+                        "🤖 AI RESULT:",
+                        foodName,
+                        calories
+                    );
+
+
+                    // =========================
+                    // SAVE TO DJANGO
+                    // =========================
+
+                    try {
+
+                        console.log(
+                            "📡 Sending meal to Django..."
+                        );
+
+
+                        const response =
+                            await fetch(
+                                "http://127.0.0.1:8000/api/add-meal/",
+                                {
+
+                                    method: "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json"
+
+                                    },
+
+                                    credentials:
+                                        "include",
+
+                                    body:
+                                        JSON.stringify({
+
+                                            food_name:
+                                                foodName,
+
+                                            calories:
+                                                calories
+
+                                        })
+
+                                }
+                            );
+
+
+                        console.log(
+                            "🔥 DJANGO RESPONDED!"
+                        );
+
+
+                        const data =
+                            await response.json();
+
+
+                        console.log(
+                            "ADD MEAL RESULT:",
+                            data
+                        );
+
+
+                        // =========================
+                        // SUCCESS
+                        // =========================
+
+                        if (data.success) {
+
+                            console.log(
+                                "✅ Meal saved to Django!"
+                            );
+
+                        }
+
+
+                        // =========================
+                        // ERROR
+                        // =========================
+
+                        else {
+
+                            console.error(
+                                "❌ Meal was not saved:",
+                                data.message
+                            );
+
+                        }
+
                     }
-                )
-
-        };
 
 
-        // Get existing meals
-        let meals =
-            JSON.parse(
-                localStorage.getItem(
-                    "calorieMeals"
-                )
-            ) || [];
+                    catch (error) {
 
+                        console.error(
+                            "❌ Django connection error:",
+                            error
+                        );
 
-        // Add new meal
-        meals.push(newMeal);
+                    }
 
+                },
+                2000
+            );
 
-        // Save
-        localStorage.setItem(
-            "calorieMeals",
-            JSON.stringify(meals)
-        );
+        }
+    );
 
-
-        alert(
-            "Meal added successfully! 🍽️"
-        );
-
-    }
-);
-
-    
-
+}

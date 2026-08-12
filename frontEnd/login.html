@@ -3,13 +3,13 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Login</title>
+    <title>Login - CalorieScan</title>
 
-<link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 
 </head>
 
@@ -17,59 +17,162 @@
 
 <div class="login-container">
 
-<div class="login-box">
+    <div class="login-box">
 
-<h1>Welcome Back!</h1>
+        <h1>Welcome Back!</h1>
 
-<p>Login to continue</p>
+        <p>Login to continue</p>
 
-<input type="email" placeholder="Email">
 
-<input type="password" placeholder="Password">
+        <form id="loginForm">
 
-<div class="login-option">
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                required
+            >
 
-    <label>
-        <input type="checkbox">
-        Remember me
-    </label>
 
-    <a href="#">Forgot password?</a>
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required
+            >
+
+
+            <div class="login-option">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="rememberMe"
+                    >
+
+                    Remember me
+
+                </label>
+
+
+                <a href="#">
+                    Forgot password?
+                </a>
+
+            </div>
+
+
+            <button type="submit">
+                Login
+            </button>
+
+        </form>
+
+
+        <p class="or">
+            Or continue with
+        </p>
+
+
+        <div class="social-login">
+
+            <button type="button">
+                Google
+            </button>
+
+            <button type="button">
+                Facebook
+            </button>
+
+            <button type="button">
+                Apple
+            </button>
+
+        </div>
+
+
+        <p class="signup-link">
+
+            Don't have an account?
+
+            <a href="signup.html">
+                Sign Up
+            </a>
+
+        </p>
+
+    </div>
 
 </div>
 
-<button>Login</button>
-<p class="or">
 
-Or continue with
+<script>
 
-</p>
+const loginForm = document.getElementById("loginForm");
 
-<div class="social-login">
+loginForm.addEventListener("submit", async function(event) {
 
-<button>Google</button>
+    event.preventDefault();
 
-<button>Facebook</button>
+    const email =
+        document.getElementById("email").value;
 
-<button>Apple</button>
+    const password =
+        document.getElementById("password").value;
 
-</div>
+    try {
 
-<p class="signup-link">
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/login/",
+            {
+                method: "POST",
 
-Don't have an account?
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-<a href="signup.html">
+            credentials: "include",
 
-Sign Up
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
 
-</a>
+        const data = await response.json();
 
-</p>
+        console.log("LOGIN RESULT:", data);
 
-</div>
+        if (data.success) {
 
-</div>
+            console.log("🚀 GOING TO DASHBOARD!");
+
+            localStorage.setItem(
+                "calorieScanUserName",
+                data.username
+            );
+
+            window.location.href = "dashboard.html";
+
+        } else {
+
+            alert(data.message);
+
+        }
+
+    } catch (error) {
+
+        console.error("LOGIN ERROR:", error);
+
+        alert("Cannot connect to Django server.");
+
+    }
+
+});
+
+</script>
 
 </body>
 

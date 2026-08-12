@@ -98,7 +98,7 @@ const signupForm =
     document.getElementById("signupForm");
 
 
-signupForm.addEventListener("submit", function(event) {
+signupForm.addEventListener("submit", async function(event) {
 
     event.preventDefault();
 
@@ -127,37 +127,63 @@ signupForm.addEventListener("submit", function(event) {
     }
 
 
-    // Save account temporarily
+    // Send data to Django
 
-    const account = {
+    try {
 
-        name: name,
+        const response = await fetch(
+            "http://127.0.0.1:8000/api/signup/",
+            {
+                method: "POST",
 
-        email: email,
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-        password: password
+                body: JSON.stringify({
 
-    };
+                    username: name,
+                    email: email,
+                    password: password
 
-
-    localStorage.setItem(
-        "calorieScanAccount",
-        JSON.stringify(account)
-    );
-
-
-    // Save user's name for profile
-
-    localStorage.setItem(
-        "calorieScanUserName",
-        name
-    );
+                })
+            }
+        );
 
 
-    // Go to Profile Setup
+        const data = await response.json();
 
-    window.location.href =
-        "profile-setup.html";
+
+        // Signup successful
+
+        if (data.success) {
+
+            alert("Account created successfully! 🎉");
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        // Signup failed
+
+        else {
+
+            alert(data.message);
+
+        }
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Cannot connect to Django server."
+        );
+
+    }
 
 });
 
@@ -165,4 +191,5 @@ signupForm.addEventListener("submit", function(event) {
 
 
 </body>
+
 </html>

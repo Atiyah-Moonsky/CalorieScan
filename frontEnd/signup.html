@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Sign Up - CalorieScan</title>
 
     <link rel="stylesheet" href="css/style.css">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
 </head>
+
 
 <body>
 
@@ -21,25 +33,47 @@
 
         <p>Sign up to start your journey</p>
 
-        <form>
 
-            <input type="text"
-            placeholder="Full Name">
+        <form id="signupForm">
 
-            <input type="email"
-            placeholder="Email">
+            <input
+                type="text"
+                id="name"
+                placeholder="Full Name"
+                required
+            >
 
-            <input type="password"
-            placeholder="Password">
 
-            <input type="password"
-            placeholder="Confirm Password">
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                required
+            >
+
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                required
+            >
+
+
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm Password"
+                required
+            >
+
 
             <button type="submit">
                 Sign Up
             </button>
 
         </form>
+
 
         <div class="bottom-link">
 
@@ -54,6 +88,81 @@
     </div>
 
 </div>
+
+
+<!-- Sign Up JavaScript -->
+
+<script>
+
+const signupForm =
+    document.getElementById("signupForm");
+
+
+signupForm.addEventListener("submit", function(event) {
+
+    event.preventDefault();
+
+
+    const name =
+        document.getElementById("name").value;
+
+    const email =
+        document.getElementById("email").value;
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+
+    // Check password
+
+    if (password !== confirmPassword) {
+
+        alert("Passwords do not match!");
+
+        return;
+
+    }
+
+
+    // Save account temporarily
+
+    const account = {
+
+        name: name,
+
+        email: email,
+
+        password: password
+
+    };
+
+
+    localStorage.setItem(
+        "calorieScanAccount",
+        JSON.stringify(account)
+    );
+
+
+    // Save user's name for profile
+
+    localStorage.setItem(
+        "calorieScanUserName",
+        name
+    );
+
+
+    // Go to Profile Setup
+
+    window.location.href =
+        "profile-setup.html";
+
+});
+
+</script>
+
 
 </body>
 </html>

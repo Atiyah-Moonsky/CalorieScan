@@ -1,4 +1,3 @@
-@ -0,0 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,11 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Scan Food</title>
+    <title>Scan Food - CalorieScan</title>
 
     <link rel="stylesheet" href="css/style.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
 </head>
 
 <body>
@@ -19,33 +21,103 @@
 
     <h1>🍽 Scan Your Food</h1>
 
-    <p>Upload an image to estimate calories.</p>
+    <p>Upload an image or take a photo of your food.</p>
+
 
     <div class="upload-box">
 
-        <label for="imageInput" class="upload-area">
+        <!-- ================= PREVIEW ================= -->
 
-            <img id="preview"
-                 src="https://placehold.co/350x250?text=Upload+Food"
-                 alt="Preview">
+        <div class="preview-box">
 
-            <p>Click to upload food image</p>
+            <img
+                id="preview"
+                src="https://placehold.co/350x250?text=Food+Preview"
+                alt="Food Preview"
+            >
 
+        </div>
+
+
+        <!-- ================= UPLOAD ================= -->
+
+        <label for="imageInput" class="upload-button">
+            📁 Upload Image
         </label>
 
         <input
             type="file"
             id="imageInput"
             accept="image/*"
-            hidden>
+            hidden
+        >
 
-        <button id="scanBtn">
+
+        <!-- ================= CAMERA ================= -->
+
+        <button
+            type="button"
+            id="cameraBtn"
+            class="camera-button"
+        >
+            📷 Take Photo
+        </button>
+
+
+        <!-- ================= CAMERA AREA ================= -->
+
+        <div
+            id="cameraContainer"
+            class="camera-container"
+            style="display:none;"
+        >
+
+            <video
+                id="camera"
+                autoplay
+                playsinline
+            ></video>
+
+            <button
+                type="button"
+                id="captureBtn"
+                class="capture-button"
+            >
+                📸 Capture
+            </button>
+
+            <button
+                type="button"
+                id="closeCameraBtn"
+                class="close-camera-button"
+            >
+                ✕ Close Camera
+            </button>
+
+        </div>
+
+
+        <!-- ================= SCAN ================= -->
+
+        <button
+            type="button"
+            id="scanBtn"
+        >
             🔍 Scan Food
         </button>
 
-        <p id="loading" style="display:none;">
+
+        <!-- Loading -->
+
+        <p
+            id="loading"
+            style="display:none;"
+        >
             ⏳ Scanning...
         </p>
+
+
+        <!-- ================= RESULT ================= -->
 
         <div class="result-card">
 
@@ -53,20 +125,42 @@
 
             <hr>
 
-            <p><strong>Food :</strong> <span id="foodName">-</span></p>
+            <p>
+                <strong>Food :</strong>
+                <span id="foodName">-</span>
+            </p>
 
-            <p><strong>Calories :</strong> <span id="calories">-</span></p>
+            <p>
+                <strong>Calories :</strong>
+                <span id="calories">-</span>
+            </p>
 
-            <p><strong>Protein :</strong> <span id="protein">-</span></p>
+            <p>
+                <strong>Protein :</strong>
+                <span id="protein">-</span>
+            </p>
 
-            <p><strong>Carbohydrate :</strong> <span id="carb">-</span></p>
+            <p>
+                <strong>Carbohydrate :</strong>
+                <span id="carb">-</span>
+            </p>
 
-            <p><strong>Fat :</strong> <span id="fat">-</span></p>
+            <p>
+                <strong>Fat :</strong>
+                <span id="fat">-</span>
+            </p>
 
-            <p><strong>Confidence :</strong> <span id="confidence">-</span></p>
+            <p>
+                <strong>Confidence :</strong>
+                <span id="confidence">-</span>
+            </p>
 
-            <button id="addMeal">
-                Add to Meal
+
+            <button
+                type="button"
+                id="addMeal"
+            >
+                ➕ Add to Meal
             </button>
 
         </div>
@@ -75,8 +169,8 @@
 
 </div>
 
-<script src="js/script.js"></script>
+
+<script src="js/scan.js"></script>
 
 </body>
-
 </html>

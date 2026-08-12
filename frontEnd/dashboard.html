@@ -52,9 +52,9 @@
                 <span>Scan Food</span>
             </a>
 
-            <a href="#" class="menu-item">
-                <i class="fa-solid fa-clock-rotate-left"></i>
-                <span>Meal History</span>
+            <a href="meal-history.html" class="menu-item">
+               <i class="fa-solid fa-clock-rotate-left"></i>
+               <span>Meal History</span>
             </a>
 
             <a href="#" class="menu-item">
@@ -67,7 +67,7 @@
                 <span>Goal</span>
             </a>
 
-            <a href="#" class="menu-item">
+            <a href="profile.html" class="menu-item">
                 <i class="fa-solid fa-user"></i>
                 <span>Profile</span>
             </a>
@@ -211,14 +211,14 @@
 
                             <th>Time</th>
 
+                            <th>Action</th>
+
                         </tr>
 
                     </thead>
 
 
                     <tbody id="mealTableBody">
-
-                        <!-- JavaScript will insert meals here -->
 
                     </tbody>
 
@@ -355,6 +355,37 @@
 
 <!-- Dashboard JavaScript -->
 <script src="js/dashboard.js"></script>
+<script>
+const meals = JSON.parse(localStorage.getItem("calorieScanMeals")) || [];
+
+let total = 0;
+
+meals.forEach(meal => {
+    total += Number(meal.calories) || 0;
+});
+
+document.getElementById("totalCalories").textContent = total;
+
+document.getElementById("remainingCalories").textContent =
+    Math.max(2000 - total, 0) + " kcal Remaining";
+
+const table = document.getElementById("mealTableBody");
+
+table.innerHTML = "";
+
+meals.slice().reverse().slice(0, 5).forEach(meal => {
+
+    table.innerHTML += `
+        <tr>
+            <td>${meal.food}</td>
+            <td>${meal.calories} kcal</td>
+            <td>${meal.meal}</td>
+            <td>${meal.time}</td>
+        </tr>
+    `;
+
+});
+</script>
 
 </body>
 </html>

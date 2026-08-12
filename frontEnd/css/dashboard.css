@@ -613,3 +613,22 @@ tbody tr:hover {
         gap: 5px;
     }
 }
+
+/* =========================================
+DELETE MEAL BUTTON
+========================================= */
+
+    .delete-meal-btn {
+       border: none;
+       background: #ff5c7a;
+       color: white;
+       padding: 7px 15px;
+       border-radius: 8px;
+       cursor: pointer;
+       font-family: 'Poppins', sans-serif;
+       font-size: 13px;
+}
+
+    .delete-meal-btn:hover {
+       opacity: 0.8;
+}

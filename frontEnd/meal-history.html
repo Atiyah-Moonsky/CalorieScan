@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Meal History - CalorieScan</title>
+
+    <!-- Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/dashboard.css">
+
+</head>
+
+
+<body>
+
+<div class="dashboard-wrapper">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            🌙 <span>CalorieScan</span>
+        </div>
+
+
+        <nav class="sidebar-menu">
+
+            <a href="dashboard.html" class="menu-item">
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>Dashboard</span>
+
+            </a>
+
+
+            <a href="scan.html" class="menu-item">
+
+                <i class="fa-solid fa-camera"></i>
+
+                <span>Scan Food</span>
+
+            </a>
+
+
+            <a href="meal-history.html"
+               class="menu-item active">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                <span>Meal History</span>
+
+            </a>
+
+
+            <a href="#" class="menu-item">
+
+                <i class="fa-solid fa-chart-column"></i>
+
+                <span>Statistics</span>
+
+            </a>
+
+
+            <a href="#" class="menu-item">
+
+                <i class="fa-solid fa-bullseye"></i>
+
+                <span>Goal</span>
+
+            </a>
+
+
+            <a href="#" class="menu-item">
+
+                <i class="fa-solid fa-user"></i>
+
+                <span>Profile</span>
+
+            </a>
+
+
+            <a href="#" class="menu-item">
+
+                <i class="fa-solid fa-gear"></i>
+
+                <span>Settings</span>
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <main class="main-content">
+
+
+        <!-- Header -->
+
+        <div class="dashboard-header">
+
+            <div>
+
+                <h1>
+                    Meal History 🍽️
+                </h1>
+
+                <p>
+                    View the meals you have added.
+                </p>
+
+            </div>
+
+
+            <div class="date-box">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                <span id="todayDate"></span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= SUMMARY ================= -->
+
+        <section class="top-grid">
+
+
+            <div class="dashboard-card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Total Meals
+                    </h2>
+
+                    <i class="fa-solid fa-utensils"></i>
+
+                </div>
+
+
+                <div class="calorie-number">
+
+                    <span id="totalMeals">
+                        0
+                    </span>
+
+                    <small>
+                        meals
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="dashboard-card">
+
+                <div class="card-title">
+
+                    <h2>
+                        Total Calories
+                    </h2>
+
+                    <i class="fa-solid fa-fire"></i>
+
+                </div>
+
+
+                <div class="calorie-number">
+
+                    <span id="historyCalories">
+                        0
+                    </span>
+
+                    <small>
+                        kcal
+                    </small>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================= MEAL HISTORY ================= -->
+
+        <section class="dashboard-card recent-meals">
+
+
+            <div class="card-title">
+
+                <h2>
+                    🍽️ All Meals
+                </h2>
+
+                <button
+                    class="view-all-btn"
+                    id="clearMeals"
+                >
+                    Clear All
+                </button>
+
+            </div>
+
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Food
+                            </th>
+
+                            <th>
+                                Calories
+                            </th>
+
+                            <th>
+                                Meal
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="historyTable">
+
+                        <!-- JavaScript -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- Footer -->
+
+        <footer class="dashboard-footer">
+
+            <p>
+                © 2026 CalorieScan AI
+            </p>
+
+            <p>
+                Eat smart. Live healthy. 💜
+            </p>
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script>
+
+
+// Today's date
+
+const todayDate =
+    document.getElementById("todayDate");
+
+if (todayDate) {
+
+    const today = new Date();
+
+    todayDate.textContent =
+        today.toLocaleDateString(
+            "en-US",
+            {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }
+        );
+
+}
+
+
+
+// Get meals
+
+let meals =
+    JSON.parse(
+        localStorage.getItem("meals")
+    ) || [];
+
+
+
+// Display meals
+
+function displayMeals() {
+
+    const table =
+        document.getElementById("historyTable");
+
+
+    table.innerHTML = "";
+
+
+    if (meals.length === 0) {
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="5"
+                    style="text-align:center; padding:30px;">
+
+                    No meals added yet 🍽️
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    meals.forEach(function(meal, index) {
+
+        const row = document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${meal.food}
+            </td>
+
+            <td>
+                ${meal.calories} kcal
+            </td>
+
+            <td>
+                ${meal.meal}
+            </td>
+
+            <td>
+                ${meal.time}
+            </td>
+
+            <td>
+
+                <button
+                    onclick="deleteMeal(${index})"
+                    style="
+                        border:none;
+                        background:#f3e8ff;
+                        color:#7c3aed;
+                        padding:7px 12px;
+                        border-radius:8px;
+                        cursor:pointer;
+                    "
+                >
+                    Delete
+                </button>
+
+            </td>
+
+        `;
+
+
+        table.appendChild(row);
+
+    });
+
+
+
+    // Total meals
+
+    document.getElementById(
+        "totalMeals"
+    ).textContent = meals.length;
+
+
+
+    // Total calories
+
+    const totalCalories =
+        meals.reduce(
+            function(total, meal) {
+
+                return total +
+                    Number(meal.calories);
+
+            },
+            0
+        );
+
+
+    document.getElementById(
+        "historyCalories"
+    ).textContent = totalCalories;
+
+}
+
+
+
+// Delete meal
+
+function deleteMeal(index) {
+
+    meals.splice(index, 1);
+
+
+    localStorage.setItem(
+        "meals",
+        JSON.stringify(meals)
+    );
+
+
+    displayMeals();
+
+}
+
+
+
+// Clear all
+
+document
+    .getElementById("clearMeals")
+    .addEventListener("click", function() {
+
+
+        if (meals.length === 0) {
+
+            return;
+
+        }
+
+
+        const confirmDelete =
+            confirm(
+                "Delete all meal history?"
+            );
+
+
+        if (confirmDelete) {
+
+            meals = [];
+
+
+            localStorage.setItem(
+                "meals",
+                JSON.stringify(meals)
+            );
+
+
+            displayMeals();
+
+        }
+
+    });
+
+
+
+// Start
+
+displayMeals();
+
+</script>
+
+
+</body>
+
+</html>

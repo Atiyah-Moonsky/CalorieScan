@@ -1069,3 +1069,22 @@ CAMERA
 .close-camera-button:hover {
     opacity: 0.85;
 }
+
+/* Back to dashboard*/
+
+.back-button {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 10px 18px;
+    background: #f0e6ff;
+    color: #6b3fa0;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.back-button:hover {
+    background: #6b3fa0;
+    color: white;
+}

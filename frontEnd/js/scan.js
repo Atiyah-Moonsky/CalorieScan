@@ -1,13 +1,13 @@
-// =========================
-// SCAN JS LOADED
-// =========================
+// ========================================
+// SCAN.JS
+// ========================================
 
 console.log("🟢 scan.js loaded!");
 
 
-// =========================
-// GET HTML ELEMENTS
-// =========================
+// ========================================
+// GET ELEMENTS
+// ========================================
 
 const imageInput =
     document.getElementById("imageInput");
@@ -21,23 +21,51 @@ const scanBtn =
 const loading =
     document.getElementById("loading");
 
+const debugMessage =
+    document.getElementById("debugMessage");
 
-// =========================
-// CHECK ELEMENTS
-// =========================
+const addMealBtn =
+    document.getElementById("addMeal");
 
-console.log("imageInput:", imageInput);
+const foodNameElement =
+    document.getElementById("foodName");
 
-console.log("preview:", preview);
+const caloriesElement =
+    document.getElementById("calories");
 
-console.log("scanBtn:", scanBtn);
+const proteinElement =
+    document.getElementById("protein");
 
-console.log("loading:", loading);
+const carbElement =
+    document.getElementById("carb");
+
+const fatElement =
+    document.getElementById("fat");
+
+const confidenceElement =
+    document.getElementById("confidence");
 
 
-// =========================
+// ========================================
+// DEBUG MESSAGE
+// ========================================
+
+function showDebug(message) {
+
+    if (debugMessage) {
+
+        debugMessage.textContent =
+            message;
+
+    }
+
+    console.log(message);
+}
+
+
+// ========================================
 // IMAGE PREVIEW
-// =========================
+// ========================================
 
 if (imageInput) {
 
@@ -48,16 +76,19 @@ if (imageInput) {
             const file =
                 this.files[0];
 
-            if (file) {
-
-                preview.src =
-                    URL.createObjectURL(file);
-
-                console.log(
-                    "📷 Image selected!"
-                );
-
+            if (!file) {
+                return;
             }
+
+            preview.src =
+                URL.createObjectURL(file);
+
+            preview.style.display =
+                "block";
+
+            showDebug(
+                "📷 Image selected!"
+            );
 
         }
     );
@@ -65,42 +96,69 @@ if (imageInput) {
 }
 
 
-// =========================
+// ========================================
 // SCAN FOOD
-// =========================
+// ========================================
 
 if (scanBtn) {
 
     scanBtn.addEventListener(
         "click",
-        async function () {
+        function (event) {
 
-            console.log(
-                "🔵 SCAN BUTTON CLICKED"
+            event.preventDefault();
+
+            showDebug(
+                "🔵 Scan started..."
             );
-            loading.style.display = "block";
+
+
+            // Check image
+
+            if (
+                !imageInput ||
+                imageInput.files.length === 0
+            ) {
+
+                showDebug(
+                    "⚠️ Please select an image first."
+                );
+
+                return;
+            }
 
 
             // Show loading
 
-            loading.style.display =
-                "block";
+            if (loading) {
+
+                loading.style.display =
+                    "block";
+
+            }
 
 
-            // Simulate AI scanning
+            showDebug(
+                "🤖 AI is analyzing..."
+            );
+
+
+            // Simulate AI
 
             setTimeout(
-                async function () {
+                function () {
 
-                    // Hide loading
+                    if (loading) {
 
-                    loading.style.display =
-                        "none";
+                        loading.style.display =
+                            "none";
+
+                    }
 
 
-                    // =========================
+                    // ========================================
                     // AI RESULT
-                    // =========================
+                    // ========================================
 
                     const foodName =
                         "Fried Rice 🍚";
@@ -121,152 +179,302 @@ if (scanBtn) {
                         "97%";
 
 
-                    // =========================
+                    // ========================================
                     // SHOW RESULT
-                    // =========================
+                    // ========================================
 
-                    document.getElementById(
-                        "foodName"
-                    ).textContent =
+                    foodNameElement.textContent =
                         foodName;
 
-
-                    document.getElementById(
-                        "calories"
-                    ).textContent =
+                    caloriesElement.textContent =
                         calories + " kcal";
 
-
-                    document.getElementById(
-                        "protein"
-                    ).textContent =
+                    proteinElement.textContent =
                         protein;
 
-
-                    document.getElementById(
-                        "carb"
-                    ).textContent =
+                    carbElement.textContent =
                         carb;
 
-
-                    document.getElementById(
-                        "fat"
-                    ).textContent =
+                    fatElement.textContent =
                         fat;
 
-
-                    document.getElementById(
-                        "confidence"
-                    ).textContent =
+                    confidenceElement.textContent =
                         confidence;
 
 
-                    console.log(
-                        "🤖 AI RESULT:",
-                        foodName,
-                        calories
+                    showDebug(
+                        "✅ Scan complete! Add to Meal 👇"
                     );
 
 
-                    // =========================
-                    // SAVE TO DJANGO
-                    // =========================
+                    // Store temporary result
 
-                    try {
+                    window.currentMeal = {
 
-                        console.log(
-                            "📡 Sending meal to Django..."
-                        );
+                        food_name:
+                            foodName,
 
+                        calories:
+                            calories,
 
-                        const response =
-                            await fetch(
-                                "http://127.0.0.1:8000/api/add-meal/",
-                                {
+                        protein:
+                            protein,
 
-                                    method: "POST",
+                        carb:
+                            carb,
 
-                                    headers: {
+                        fat:
+                            fat,
 
-                                        "Content-Type":
-                                            "application/json"
+                        confidence:
+                            confidence
 
-                                    },
-
-                                    credentials:
-                                        "include",
-
-                                    body:
-                                        JSON.stringify({
-
-                                            food_name:
-                                                foodName,
-
-                                            calories:
-                                                calories
-
-                                        })
-
-                                }
-                            );
-
-
-                        console.log(
-                            "🔥 DJANGO RESPONDED!"
-                        );
-
-
-                        const data =
-                            await response.json();
-
-
-                        console.log(
-                            "ADD MEAL RESULT:",
-                            data
-                        );
-
-
-                        // =========================
-                        // SUCCESS
-                        // =========================
-
-                        if (data.success) {
-
-                            console.log(
-                                "✅ Meal saved to Django!"
-                            );
-
-                        }
-
-
-                        // =========================
-                        // ERROR
-                        // =========================
-
-                        else {
-
-                            console.error(
-                                "❌ Meal was not saved:",
-                                data.message
-                            );
-
-                        }
-
-                    }
-
-
-                    catch (error) {
-
-                        console.error(
-                            "❌ Django connection error:",
-                            error
-                        );
-
-                    }
+                    };
 
                 },
                 2000
             );
+
+        }
+    );
+
+}
+
+
+// ========================================
+// ADD TO MEAL
+// ========================================
+
+if (addMealBtn) {
+
+    addMealBtn.addEventListener(
+        "click",
+        async function () {
+
+            // Check scan result
+
+            if (!window.currentMeal) {
+
+                showDebug(
+                    "⚠️ Please scan your food first."
+                );
+
+                return;
+
+            }
+
+
+            showDebug(
+                "📡 Saving meal..."
+            );
+
+
+            addMealBtn.disabled =
+                true;
+
+            addMealBtn.textContent =
+                "Saving...";
+
+
+            try {
+
+                // ========================================
+                // SEND TO DJANGO
+                // ========================================
+
+                const response =
+                    await fetch(
+                        "http://127.0.0.1:8000/api/add-meal/",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            credentials:
+                                "include",
+
+                            body:
+                                JSON.stringify({
+
+                                    food_name:
+                                        window.currentMeal.food_name,
+
+                                    calories:
+                                        window.currentMeal.calories,
+
+                                    protein:
+                                        window.currentMeal.protein,
+
+                                    carbohydrate:
+                                        window.currentMeal.carb,
+
+                                    fat:
+                                        window.currentMeal.fat,
+
+                                    confidence:
+                                        window.currentMeal.confidence
+
+                                })
+
+                        }
+                    );
+
+
+                // Get response
+
+                const text =
+                    await response.text();
+
+
+                console.log(
+                    "Django response:",
+                    text
+                );
+
+
+                let data;
+
+                try {
+
+                    data =
+                        JSON.parse(text);
+
+                }
+
+                catch (error) {
+
+                    showDebug(
+                        "❌ Django returned invalid response."
+                    );
+
+                    console.error(
+                        error
+                    );
+
+                    return;
+
+                }
+
+
+                // ========================================
+                // SUCCESS
+                // ========================================
+
+                if (data.success) {
+
+                    showDebug(
+                        "🎉 Meal added successfully!"
+                    );
+
+
+                    alert(
+                        "Meal added successfully! 🎉"
+                    );
+
+
+                    // Save local backup
+
+                    const meals =
+                        JSON.parse(
+                            localStorage.getItem(
+                                "calorieScanMeals"
+                            )
+                        ) || [];
+
+
+                    meals.push({
+
+                        foodName:
+                            window.currentMeal.food_name,
+
+                        calories:
+                            window.currentMeal.calories,
+
+                        protein:
+                            window.currentMeal.protein,
+
+                        carb:
+                            window.currentMeal.carb,
+
+                        fat:
+                            window.currentMeal.fat,
+
+                        confidence:
+                            window.currentMeal.confidence,
+
+                        date:
+                            new Date().toISOString()
+
+                    });
+
+
+                    localStorage.setItem(
+                        "calorieScanMeals",
+                        JSON.stringify(meals)
+                    );
+
+
+                    console.log(
+                        "💾 Meal saved locally!"
+                    );
+
+
+                    // Reset button
+
+                    addMealBtn.disabled =
+                        false;
+
+                    addMealBtn.textContent =
+                        "➕ Added to Meal";
+
+
+                }
+
+                else {
+
+                    showDebug(
+                        "❌ " +
+                        (data.message ||
+                            "Meal was not saved.")
+                    );
+
+
+                    addMealBtn.disabled =
+                        false;
+
+                    addMealBtn.textContent =
+                        "➕ Add to Meal";
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "❌ Django error:",
+                    error
+                );
+
+
+                showDebug(
+                    "❌ Cannot connect to Django."
+                );
+
+
+                addMealBtn.disabled =
+                    false;
+
+                addMealBtn.textContent =
+                    "➕ Add to Meal";
+
+            }
 
         }
     );

@@ -2,28 +2,25 @@
 // CalorieScan Dashboard
 // ===============================
 
-let meals = JSON.parse(localStorage.getItem("calorieMeals")) || [
-    {
-        food: "Fried Rice 🍚",
-        calories: 520,
-        meal: "Lunch",
-        time: "04:10 PM"
-    },
-    {
-        food: "Apple 🍎",
-        calories: 95,
-        meal: "Snack",
-        time: "02:30 PM"
-    }
-];
+let meals =
+    JSON.parse(
+        localStorage.getItem("calorieScanMeals")
+    ) || [];
+
 
 // ===============================
 // SAVE MEALS
 // ===============================
 
 function saveMeals() {
-    localStorage.setItem("calorieMeals", JSON.stringify(meals));
+
+    localStorage.setItem(
+        "calorieScanMeals",
+        JSON.stringify(meals)
+    );
+
 }
+
 
 // ===============================
 // DISPLAY MEALS
@@ -31,37 +28,78 @@ function saveMeals() {
 
 function displayMeals() {
 
-    const tableBody = document.getElementById("mealTableBody");
+    const tableBody =
+        document.getElementById("mealTableBody");
 
     if (!tableBody) return;
 
     tableBody.innerHTML = "";
 
-    meals.forEach((meal, index) => {
 
-        const row = document.createElement("tr");
+    meals
+        .slice()
+        .reverse()
+        .forEach((meal, index) => {
 
-        row.innerHTML = `
-            <td>${meal.food}</td>
-            <td>${meal.calories} kcal</td>
-            <td>${meal.meal}</td>
-            <td>${meal.time}</td>
+            const row =
+                document.createElement("tr");
 
-            <td>
-    <button
-        type="button"
-        onclick="deleteMeal(${index})"
-        style="background:red;color:white;padding:10px;border:none;border-radius:8px;cursor:pointer;">
-        DELETE
-    </button>
-            </td>
-        `;
+            row.innerHTML = `
+                <td>
+                    ${meal.foodName || "Unknown Food"}
+                </td>
 
-        tableBody.appendChild(row);
-    });
+                <td>
+                    ${meal.calories || 0} kcal
+                </td>
+
+                <td>
+                    Meal
+                </td>
+
+                <td>
+                    ${
+                        meal.date
+                            ? new Date(
+                                meal.date
+                              ).toLocaleTimeString(
+                                [],
+                                {
+                                    hour: "2-digit",
+                                    minute: "2-digit"
+                                }
+                              )
+                            : "-"
+                    }
+                </td>
+
+                <td>
+                    <button
+                        type="button"
+                        onclick="deleteMeal(${index})"
+                        style="
+                            background:red;
+                            color:white;
+                            padding:8px 12px;
+                            border:none;
+                            border-radius:8px;
+                            cursor:pointer;
+                        "
+                    >
+                        DELETE
+                    </button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+
+        });
+
 
     updateCalories();
+
 }
+
 
 // ===============================
 // DELETE MEAL
@@ -69,11 +107,13 @@ function displayMeals() {
 
 function deleteMeal(index) {
 
-    const confirmDelete = confirm(
-        "Do you want to delete this meal?"
-    );
+    const confirmDelete =
+        confirm(
+            "Do you want to delete this meal?"
+        );
 
     if (!confirmDelete) return;
+
 
     meals.splice(index, 1);
 
@@ -83,8 +123,8 @@ function deleteMeal(index) {
 
     updateMealChart();
 
-    updateWeeklyChart();
 }
+
 
 // ===============================
 // TODAY'S CALORIES
@@ -94,49 +134,117 @@ function updateCalories() {
 
     let total = 0;
 
+    let protein = 0;
+    let carb = 0;
+    let fat = 0;
+
+
     meals.forEach(meal => {
-        total += Number(meal.calories);
+
+        total +=
+            Number(meal.calories) || 0;
+
+        protein +=
+            parseFloat(meal.protein) || 0;
+
+        carb +=
+            parseFloat(meal.carb) || 0;
+
+        fat +=
+            parseFloat(meal.fat) || 0;
+
     });
 
+
     const totalCalories =
-        document.getElementById("totalCalories");
+        document.getElementById(
+            "totalCalories"
+        );
 
     const remainingCalories =
-        document.getElementById("remainingCalories");
+        document.getElementById(
+            "remainingCalories"
+        );
 
     const progress =
-        document.getElementById("calorieProgress");
+        document.getElementById(
+            "calorieProgress"
+        );
 
-    const dailyGoal =
-        document.getElementById("dailyGoal");
+    const proteinValue =
+        document.getElementById(
+            "proteinValue"
+        );
 
-    if (!totalCalories) return;
+    const carbValue =
+        document.getElementById(
+            "carbValue"
+        );
 
-    totalCalories.textContent = total;
+    const fatValue =
+        document.getElementById(
+            "fatValue"
+        );
 
-    const goal =
-        Number(dailyGoal?.textContent) || 2000;
 
-    const remaining =
-        Math.max(goal - total, 0);
+    if (totalCalories) {
+
+        totalCalories.textContent =
+            total;
+
+    }
+
 
     if (remainingCalories) {
+
         remainingCalories.textContent =
-            remaining + " kcal Remaining";
+            Math.max(
+                2000 - total,
+                0
+            ) + " kcal Remaining";
+
     }
+
 
     if (progress) {
 
-        let percentage =
-            (total / goal) * 100;
-
-        percentage =
-            Math.min(percentage, 100);
+        const percentage =
+            Math.min(
+                (total / 2000) * 100,
+                100
+            );
 
         progress.style.width =
             percentage + "%";
+
     }
+
+
+    if (proteinValue) {
+
+        proteinValue.textContent =
+            protein + " g";
+
+    }
+
+
+    if (carbValue) {
+
+        carbValue.textContent =
+            carb + " g";
+
+    }
+
+
+    if (fatValue) {
+
+        fatValue.textContent =
+            fat + " g";
+
+    }
+
 }
+
 
 // ===============================
 // MEAL CHART
@@ -144,70 +252,100 @@ function updateCalories() {
 
 let mealChart;
 
+
 function updateMealChart() {
 
     const canvas =
-        document.getElementById("mealChart");
+        document.getElementById(
+            "mealChart"
+        );
 
     if (!canvas) return;
 
+
     const breakfast =
-        getMealCalories("Breakfast");
+        getMealCalories(
+            "Breakfast"
+        );
 
     const lunch =
-        getMealCalories("Lunch");
+        getMealCalories(
+            "Lunch"
+        );
 
     const dinner =
-        getMealCalories("Dinner");
+        getMealCalories(
+            "Dinner"
+        );
 
     const snack =
-        getMealCalories("Snack");
+        getMealCalories(
+            "Snack"
+        );
+
 
     if (mealChart) {
+
         mealChart.destroy();
+
     }
 
-    mealChart = new Chart(canvas, {
 
-        type: "doughnut",
+    mealChart =
+        new Chart(
 
-        data: {
+            canvas,
 
-            labels: [
-                "Breakfast",
-                "Lunch",
-                "Dinner",
-                "Snack"
-            ],
+            {
 
-            datasets: [{
+                type: "doughnut",
 
-                data: [
-                    breakfast,
-                    lunch,
-                    dinner,
-                    snack
-                ]
+                data: {
 
-            }]
-        },
+                    labels: [
+                        "Breakfast",
+                        "Lunch",
+                        "Dinner",
+                        "Snack"
+                    ],
 
-        options: {
+                    datasets: [{
 
-            responsive: true,
+                        data: [
+                            breakfast,
+                            lunch,
+                            dinner,
+                            snack
+                        ]
 
-            maintainAspectRatio: false,
+                    }]
 
-            plugins: {
+                },
 
-                legend: {
-                    position: "right"
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "right"
+
+                        }
+
+                    }
+
                 }
 
             }
-        }
-    });
+
+        );
+
 }
+
 
 // ===============================
 // GET CALORIES BY MEAL
@@ -216,13 +354,26 @@ function updateMealChart() {
 function getMealCalories(mealType) {
 
     return meals
-        .filter(meal => meal.meal === mealType)
+
+        .filter(
+            meal =>
+                meal.meal === mealType
+        )
+
         .reduce(
             (total, meal) =>
-                total + Number(meal.calories),
+                total +
+                (
+                    Number(
+                        meal.calories
+                    ) || 0
+                ),
+
             0
         );
+
 }
+
 
 // ===============================
 // WEEKLY CHART
@@ -230,59 +381,78 @@ function getMealCalories(mealType) {
 
 let weeklyChart;
 
+
 function updateWeeklyChart() {
 
     const canvas =
-        document.getElementById("weeklyChart");
+        document.getElementById(
+            "weeklyChart"
+        );
 
     if (!canvas) return;
 
+
     if (weeklyChart) {
+
         weeklyChart.destroy();
+
     }
 
-    weeklyChart = new Chart(canvas, {
 
-        type: "bar",
+    weeklyChart =
+        new Chart(
 
-        data: {
+            canvas,
 
-            labels: [
-                "Mon",
-                "Tue",
-                "Wed",
-                "Thu",
-                "Fri",
-                "Sat",
-                "Sun"
-            ],
+            {
 
-            datasets: [{
+                type: "bar",
 
-                label: "Calories",
+                data: {
 
-                data: [
-                    1800,
-                    1650,
-                    2100,
-                    1900,
-                    2200,
-                    1700,
-                    2000
-                ]
+                    labels: [
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sat",
+                        "Sun"
+                    ],
 
-            }]
-        },
+                    datasets: [{
 
-        options: {
+                        label:
+                            "Calories",
 
-            responsive: true,
+                        data: [
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0,
+                            0
+                        ]
 
-            maintainAspectRatio: false
+                    }]
 
-        }
-    });
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false
+
+                }
+
+            }
+
+        );
+
 }
+
 
 // ===============================
 // TODAY DATE
@@ -291,22 +461,64 @@ function updateWeeklyChart() {
 function showDate() {
 
     const dateElement =
-        document.getElementById("todayDate");
+        document.getElementById(
+            "todayDate"
+        );
 
     if (!dateElement) return;
 
-    const today = new Date();
+
+    const today =
+        new Date();
+
 
     dateElement.textContent =
         today.toLocaleDateString(
             "en-US",
             {
+
                 day: "numeric",
+
                 month: "short",
+
                 year: "numeric"
+
             }
         );
+
 }
+
+
+// ===============================
+// USER NAME
+// ===============================
+
+function showUserName() {
+
+    const userName =
+        localStorage.getItem(
+            "calorieScanUserName"
+        );
+
+
+    const userNameElement =
+        document.getElementById(
+            "userName"
+        );
+
+
+    if (
+        userName &&
+        userNameElement
+    ) {
+
+        userNameElement.textContent =
+            userName;
+
+    }
+
+}
+
 
 // ===============================
 // START DASHBOARD
@@ -317,6 +529,8 @@ document.addEventListener(
     function () {
 
         showDate();
+
+        showUserName();
 
         displayMeals();
 

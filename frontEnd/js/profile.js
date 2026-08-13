@@ -6,6 +6,24 @@ document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+                // =========================================
+        // CURRENT USER PROFILE KEY
+        // =========================================
+
+        const currentUserEmail =
+            localStorage.getItem(
+                "calorieScanUserEmail"
+            ) || "guest";
+
+        const profileStorageKey =
+            "calorieProfile_" + currentUserEmail;
+
+            const userNameStorageKey =
+    "calorieScanUserName_" + currentUserEmail;
+
+const calorieGoalStorageKey =
+    "dailyCalorieGoal_" + currentUserEmail;
+
 
         // =========================================
         // GET ELEMENTS
@@ -53,11 +71,11 @@ document.addEventListener(
         // =========================================
 
         const savedProfile =
-            JSON.parse(
-                localStorage.getItem(
-                    "calorieProfile"
-                )
-            ) || {};
+    JSON.parse(
+        localStorage.getItem(
+            profileStorageKey
+        )
+    ) || {};
 
 
         if (savedProfile.fullName) {
@@ -232,6 +250,7 @@ document.addEventListener(
         // CALCULATE BUTTON
         // =========================================
 
+        if (calculateButton) {
         calculateButton.addEventListener(
             "click",
             function () {
@@ -283,6 +302,8 @@ document.addEventListener(
 
             }
         );
+
+     }
 
 
         // =========================================
@@ -409,9 +430,9 @@ document.addEventListener(
                 // =====================================
 
                 localStorage.setItem(
-                    "calorieProfile",
-                    JSON.stringify(profile)
-                );
+    profileStorageKey,
+    JSON.stringify(profile)
+);
 
 
                 // =====================================
@@ -419,9 +440,9 @@ document.addEventListener(
                 // =====================================
 
                 localStorage.setItem(
-                    "calorieScanUserName",
-                    fullName.value
-                );
+    userNameStorageKey,
+    fullName.value
+);
 
 
                 // =====================================
@@ -429,9 +450,9 @@ document.addEventListener(
                 // =====================================
 
                 localStorage.setItem(
-                    "dailyCalorieGoal",
-                    calorieGoal.value
-                );
+    calorieGoalStorageKey,
+    calorieGoal.value
+);
 
 
                 // =====================================

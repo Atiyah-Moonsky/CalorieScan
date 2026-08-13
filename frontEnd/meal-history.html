@@ -321,6 +321,7 @@
 
 
 <!-- ================= JAVASCRIPT ================= -->
+<script src="js/userStorage.js"></script>
 
 <script>
 
@@ -359,11 +360,15 @@ if (todayDate) {
 
 // ใช้ชื่อเดียวกับ scan.js
 
+const currentUserEmail =
+    localStorage.getItem("calorieScanUserEmail") || "guest";
+
+const mealStorageKey =
+    "calorieScanMeals_" + currentUserEmail;
+
 let meals =
     JSON.parse(
-        localStorage.getItem(
-            "calorieScanMeals"
-        )
+        localStorage.getItem(mealStorageKey)
     ) || [];
 
 
@@ -613,10 +618,9 @@ function deleteMeal(index) {
 
 
     localStorage.setItem(
-        "calorieScanMeals",
-        JSON.stringify(meals)
-    );
-
+    mealStorageKey,
+    JSON.stringify(meals)
+   );
 
     displayMeals();
 
@@ -667,9 +671,9 @@ if (clearMeals) {
 
 
             localStorage.setItem(
-                "calorieScanMeals",
-                JSON.stringify(meals)
-            );
+               mealStorageKey,
+               JSON.stringify(meals)
+          );
 
 
             displayMeals();

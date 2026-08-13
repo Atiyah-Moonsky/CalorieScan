@@ -405,70 +405,72 @@ if (addMealBtn) {
                     // SAVE LOCAL BACKUP
                     // ========================================
 
-                    const meals =
-                        JSON.parse(
-                            localStorage.getItem(
-                                "calorieScanMeals"
-                            )
-                        ) || [];
+                   const currentUserEmail =
+    localStorage.getItem("calorieScanUserEmail") || "guest";
+
+const mealStorageKey =
+    "calorieScanMeals_" + currentUserEmail;
+
+const meals =
+    JSON.parse(
+        localStorage.getItem(mealStorageKey)
+    ) || [];
+
+meals.push({
+
+    food:
+        window.currentMeal.food_name,
+
+    foodName:
+        window.currentMeal.food_name,
+
+    calories:
+        window.currentMeal.calories,
+
+    protein:
+        window.currentMeal.protein,
+
+    carb:
+        window.currentMeal.carb,
+
+    fat:
+        window.currentMeal.fat,
+
+    confidence:
+        window.currentMeal.confidence,
+
+    meal:
+        mealType,
+
+    date:
+        new Date().toISOString(),
+
+    time:
+        new Date().toLocaleTimeString(
+            "en-US",
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        )
+
+});
 
 
-                    meals.push({
-
-                        food:
-                            window.currentMeal.food_name,
-
-                        foodName:
-                            window.currentMeal.food_name,
-
-                        calories:
-                            window.currentMeal.calories,
-
-                        protein:
-                            window.currentMeal.protein,
-
-                        carb:
-                            window.currentMeal.carb,
-
-                        fat:
-                            window.currentMeal.fat,
-
-                        confidence:
-                            window.currentMeal.confidence,
-
-                        meal:
-                            mealType,
-
-                        date:
-                            new Date().toISOString(),
-
-                        time:
-                            new Date().toLocaleTimeString(
-                                "en-US",
-                                {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                }
-                            )
-
-                    });
+localStorage.setItem(
+    mealStorageKey,
+    JSON.stringify(meals)
+);
 
 
-                    localStorage.setItem(
-                        "calorieScanMeals",
-                        JSON.stringify(meals)
-                    );
+console.log(
+    "💾 Meal saved locally!"
+);
 
-
-                    console.log(
-                        "💾 Meal saved locally!"
-                    );
-
-                    console.log(
-                        "🍽️ Meal Type:",
-                        mealType
-                    );
-
+console.log(
+    "🍽️ Meal Type:",
+    mealType
+);
 
                     // ========================================
                     // RESET BUTTON

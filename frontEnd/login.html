@@ -154,6 +154,11 @@ loginForm.addEventListener("submit", async function(event) {
                 data.username
             );
 
+            localStorage.setItem(
+                "calorieScanUserEmail",
+                 email
+            );
+
             window.location.href = "dashboard.html";
 
         } else {

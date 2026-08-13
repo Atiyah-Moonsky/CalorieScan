@@ -1,12 +1,27 @@
 // ===============================
-// CalorieScan Dashboard
+// CURRENT USER
+// ===============================
+
+const currentUserEmail =
+    localStorage.getItem("calorieScanUserEmail") || "guest";
+
+
+// ===============================
+// USER-SPECIFIC MEALS
+// ===============================
+
+const mealStorageKey =
+    "calorieScanMeals_" + currentUserEmail;
+
+
+// ===============================
+// GET MEALS
 // ===============================
 
 let meals =
     JSON.parse(
-        localStorage.getItem("calorieScanMeals")
+        localStorage.getItem(mealStorageKey)
     ) || [];
-
 
 // ===============================
 // SAVE MEALS
@@ -15,7 +30,7 @@ let meals =
 function saveMeals() {
 
     localStorage.setItem(
-        "calorieScanMeals",
+        mealStorageKey,
         JSON.stringify(meals)
     );
 
@@ -28,8 +43,18 @@ function saveMeals() {
 
 function getDailyGoal() {
 
+    const currentUserEmail =
+        localStorage.getItem(
+            "calorieScanUserEmail"
+        ) || "guest";
+
+    const calorieGoalStorageKey =
+        "dailyCalorieGoal_" + currentUserEmail;
+
     const savedGoal =
-        localStorage.getItem("dailyCalorieGoal");
+        localStorage.getItem(
+            calorieGoalStorageKey
+        );
 
     return Number(savedGoal) || 2000;
 
@@ -57,15 +82,26 @@ function loadProfileData() {
 
     // User Name
 
-    if (
-        userName &&
-        profile.fullName
-    ) {
+const savedUserName =
+    localStorage.getItem("calorieScanUserName");
 
-        userName.textContent =
-            profile.fullName;
+if (
+    userName &&
+    savedUserName
+) {
 
-    }
+    userName.textContent =
+        savedUserName;
+
+} else if (
+    userName &&
+    profile.fullName
+) {
+
+    userName.textContent =
+        profile.fullName;
+
+}
 
 
     // Daily Goal
@@ -499,11 +535,11 @@ function updateWeeklyChart() {
 
 
     const scanMeals =
-        JSON.parse(
-            localStorage.getItem(
-                "calorieScanMeals"
-            )
-        ) || [];
+    JSON.parse(
+        localStorage.getItem(
+            mealStorageKey
+        )
+    ) || [];
 
 
     const today =

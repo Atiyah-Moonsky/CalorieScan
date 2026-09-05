@@ -7,14 +7,34 @@ document.addEventListener(
     function () {
 
         // ========================================
+        // CURRENT USER
+        // ========================================
+
+        const currentUserEmail =
+            localStorage.getItem("calorieScanUserEmail") || "guest";
+
+
+        // ========================================
+        // USER-SPECIFIC STORAGE KEYS
+        // ========================================
+
+        const profileStorageKey =
+            "calorieProfile_" + currentUserEmail;
+
+        const mealStorageKey =
+            "calorieScanMeals_" + currentUserEmail;
+
+        const calorieGoalStorageKey =
+            "dailyCalorieGoal_" + currentUserEmail;
+
+
+        // ========================================
         // LOAD PROFILE
         // ========================================
 
         const profile =
             JSON.parse(
-                localStorage.getItem(
-                    "calorieProfile"
-                )
+                localStorage.getItem(profileStorageKey)
             ) || {};
 
 
@@ -24,9 +44,7 @@ document.addEventListener(
 
         const meals =
             JSON.parse(
-                localStorage.getItem(
-                    "calorieScanMeals"
-                )
+                localStorage.getItem(mealStorageKey)
             ) || [];
 
 
@@ -76,28 +94,50 @@ document.addEventListener(
         // DISPLAY PROFILE
         // ========================================
 
-        document.getElementById(
-            "userAge"
-        ).textContent =
-            age
-                ? age + " years"
-                : "-";
+        const userAge =
+            document.getElementById(
+                "userAge"
+            );
+
+        const userWeight =
+            document.getElementById(
+                "userWeight"
+            );
+
+        const userHeight =
+            document.getElementById(
+                "userHeight"
+            );
 
 
-        document.getElementById(
-            "userWeight"
-        ).textContent =
-            weight
-                ? weight + " kg"
-                : "-";
+        if (userAge) {
+
+            userAge.textContent =
+                age
+                    ? age + " years"
+                    : "-";
+
+        }
 
 
-        document.getElementById(
-            "userHeight"
-        ).textContent =
-            height
-                ? height + " cm"
-                : "-";
+        if (userWeight) {
+
+            userWeight.textContent =
+                weight
+                    ? weight + " kg"
+                    : "-";
+
+        }
+
+
+        if (userHeight) {
+
+            userHeight.textContent =
+                height
+                    ? height + " cm"
+                    : "-";
+
+        }
 
 
         // ========================================
@@ -151,7 +191,7 @@ document.addEventListener(
 
 
         // ========================================
-        // ESTIMATE DAILY CALORIES
+        // RECOMMENDED DAILY CALORIES
         // ========================================
 
         let recommendedCalories =
@@ -160,30 +200,51 @@ document.addEventListener(
 
         if (bmr > 0) {
 
-            // Moderate activity estimate
-
             recommendedCalories =
                 Math.round(
-                    bmr * 1.4
+                    bmr * 1.375
                 );
 
         }
 
 
         // ========================================
-        // USE SAVED GOAL IF EXISTS
+        // LOAD SAVED GOAL
         // ========================================
 
-        let goal =
+        const savedGoal =
             Number(
-                profile.calorieGoal
+                localStorage.getItem(
+                    calorieGoalStorageKey
+                )
             );
 
 
+        let goal;
+
+
         if (
-            !goal ||
-            goal <= 0
+            savedGoal &&
+            savedGoal > 0
         ) {
+
+            goal = savedGoal;
+
+        }
+
+        else if (
+            profile.calorieGoal &&
+            Number(profile.calorieGoal) > 0
+        ) {
+
+            goal =
+                Number(
+                    profile.calorieGoal
+                );
+
+        }
+
+        else {
 
             goal =
                 recommendedCalories;
@@ -246,16 +307,32 @@ document.addEventListener(
         // DISPLAY GOAL
         // ========================================
 
-        document.getElementById(
-            "goalCalories"
-        ).textContent =
-            goal;
+        const goalCalories =
+            document.getElementById(
+                "goalCalories"
+            );
 
 
-        document.getElementById(
-            "todayCalories"
-        ).textContent =
-            todayCalories;
+        const todayCaloriesElement =
+            document.getElementById(
+                "todayCalories"
+            );
+
+
+        if (goalCalories) {
+
+            goalCalories.textContent =
+                goal;
+
+        }
+
+
+        if (todayCaloriesElement) {
+
+            todayCaloriesElement.textContent =
+                todayCalories;
+
+        }
 
 
         // ========================================
@@ -268,14 +345,21 @@ document.addEventListener(
             );
 
 
-        const percentage =
-            Math.min(
-                (
-                    todayCalories /
-                    goal
-                ) * 100,
-                100
-            );
+        let percentage = 0;
+
+
+        if (goal > 0) {
+
+            percentage =
+                Math.min(
+                    (
+                        todayCalories /
+                        goal
+                    ) * 100,
+                    100
+                );
+
+        }
 
 
         if (progress) {
@@ -303,18 +387,24 @@ document.addEventListener(
             );
 
 
-        if (todayCalories > goal) {
+        if (goalMessage) {
 
-            goalMessage.textContent =
-                "You have exceeded your daily calorie goal.";
+            if (
+                todayCalories > goal
+            ) {
 
-        }
+                goalMessage.textContent =
+                    "You have exceeded your daily calorie goal.";
 
-        else {
+            }
 
-            goalMessage.textContent =
-                remaining +
-                " kcal remaining";
+            else {
+
+                goalMessage.textContent =
+                    remaining +
+                    " kcal remaining";
+
+            }
 
         }
 
@@ -329,43 +419,47 @@ document.addEventListener(
             );
 
 
-        if (
-            age &&
-            weight &&
-            height &&
-            gender
-        ) {
+        if (recommendation) {
 
-            recommendation.innerHTML = `
+            if (
+                age &&
+                weight &&
+                height &&
+                gender
+            ) {
 
-                Based on your profile, your estimated
-                daily calorie requirement is approximately
+                recommendation.innerHTML = `
 
-                <strong>
-                    ${recommendedCalories} kcal/day
-                </strong>.
+                    Based on your profile, your estimated
+                    daily calorie requirement is approximately
 
-                <br><br>
+                    <strong>
+                        ${recommendedCalories} kcal/day
+                    </strong>.
 
-                This is an estimate based on the
-                Mifflin-St Jeor equation and a moderate
-                activity assumption.
+                    <br><br>
 
-                <br><br>
+                    This is an estimate based on the
+                    Mifflin-St Jeor equation and a moderate
+                    activity assumption.
 
-                You can adjust your goal from your
-                <a href="profile.html">
-                    Profile
-                </a>.
+                    <br><br>
 
-            `;
+                    You can adjust your goal from your
+                    <a href="profile.html">
+                        Profile
+                    </a>.
 
-        }
+                `;
 
-        else {
+            }
 
-            recommendation.textContent =
-                "Please complete your age, gender, weight, and height in your Profile to calculate your recommended calorie intake.";
+            else {
+
+                recommendation.textContent =
+                    "Please complete your age, gender, weight, and height in your Profile to calculate your recommended calorie intake.";
+
+            }
 
         }
 

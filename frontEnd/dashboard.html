@@ -91,7 +91,7 @@
         <span>Profile</span>
     </a>
 
-    <a href="#" class="menu-item">
+    <a href="settings.html" class="menu-item">
         <i class="fa-solid fa-gear"></i>
         <span>Settings</span>
     </a>
@@ -351,111 +351,45 @@
 
             </div>
 
+                    <!-- ================= WHAT SHOULD I EAT TODAY ================= -->
+
+        <section class="dashboard-card food-recommendation-card">
+
+            <div class="card-title">
+
+                <h2>
+                    🍽️ วันนี้กินอะไรดี?
+                </h2>
+
+                <button
+                    type="button"
+                    id="randomFoodBtn"
+                    class="random-food-btn"
+                >
+                    🔄 สุ่มเมนู
+                </button>
+
+            </div>
+
+
+            <p class="food-recommendation-text">
+                เหลือ
+                <strong id="foodRemainingCalories">
+                    0
+                </strong>
+                kcal สำหรับวันนี้
+            </p>
+
+
+            <div
+                id="foodRecommendationList"
+                class="food-recommendation-list"
+            >
+            </div>
 
         </section>
 
-
-
-        <!-- ================= NUTRITION ================= -->
-
-        <section class="nutrition-grid">
-
-
-            <!-- Protein -->
-
-            <div class="nutrition-card">
-
-
-                <div class="nutrition-icon protein-icon">
-                    💪
-                </div>
-
-
-                <div>
-
-                    <p>
-                        Protein
-                    </p>
-
-                    <h3 id="proteinValue">
-                        0 g
-                    </h3>
-
-                    <small>
-                        Today's intake
-                    </small>
-
-                </div>
-
-
-            </div>
-
-
-
-            <!-- Carbohydrate -->
-
-            <div class="nutrition-card">
-
-
-                <div class="nutrition-icon carb-icon">
-                    🍞
-                </div>
-
-
-                <div>
-
-                    <p>
-                        Carbohydrate
-                    </p>
-
-                    <h3 id="carbValue">
-                        0 g
-                    </h3>
-
-                    <small>
-                        Today's intake
-                    </small>
-
-                </div>
-
-
-            </div>
-
-
-
-            <!-- Fat -->
-
-            <div class="nutrition-card">
-
-
-                <div class="nutrition-icon fat-icon">
-                    🥑
-                </div>
-
-
-                <div>
-
-                    <p>
-                        Fat
-                    </p>
-
-                    <h3 id="fatValue">
-                        0 g
-                    </h3>
-
-                    <small>
-                        Today's intake
-                    </small>
-
-                </div>
-
-
-            </div>
-
-
         </section>
-
-
 
         <!-- FOOTER -->
 

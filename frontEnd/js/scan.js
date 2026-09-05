@@ -33,15 +33,6 @@ const foodNameElement =
 const caloriesElement =
     document.getElementById("calories");
 
-const proteinElement =
-    document.getElementById("protein");
-
-const carbElement =
-    document.getElementById("carb");
-
-const fatElement =
-    document.getElementById("fat");
-
 const confidenceElement =
     document.getElementById("confidence");
 
@@ -114,7 +105,6 @@ if (scanBtn) {
 
 
             // Check image
-
             if (
                 !imageInput ||
                 imageInput.files.length === 0
@@ -129,7 +119,6 @@ if (scanBtn) {
 
 
             // Show loading
-
             if (loading) {
 
                 loading.style.display =
@@ -143,7 +132,9 @@ if (scanBtn) {
             );
 
 
-            // Simulate AI
+            // ========================================
+            // SIMULATE AI
+            // ========================================
 
             setTimeout(
                 function () {
@@ -166,15 +157,6 @@ if (scanBtn) {
                     const calories =
                         520;
 
-                    const protein =
-                        "14 g";
-
-                    const carb =
-                        "63 g";
-
-                    const fat =
-                        "18 g";
-
                     const confidence =
                         "97%";
 
@@ -183,23 +165,26 @@ if (scanBtn) {
                     // SHOW RESULT
                     // ========================================
 
-                    foodNameElement.textContent =
-                        foodName;
+                    if (foodNameElement) {
 
-                    caloriesElement.textContent =
-                        calories + " kcal";
+                        foodNameElement.textContent =
+                            foodName;
 
-                    proteinElement.textContent =
-                        protein;
+                    }
 
-                    carbElement.textContent =
-                        carb;
+                    if (caloriesElement) {
 
-                    fatElement.textContent =
-                        fat;
+                        caloriesElement.textContent =
+                            calories + " kcal";
 
-                    confidenceElement.textContent =
-                        confidence;
+                    }
+
+                    if (confidenceElement) {
+
+                        confidenceElement.textContent =
+                            confidence;
+
+                    }
 
 
                     showDebug(
@@ -218,15 +203,6 @@ if (scanBtn) {
 
                         calories:
                             calories,
-
-                        protein:
-                            protein,
-
-                        carb:
-                            carb,
-
-                        fat:
-                            fat,
 
                         confidence:
                             confidence
@@ -254,7 +230,6 @@ if (addMealBtn) {
         async function () {
 
             // Check scan result
-
             if (!window.currentMeal) {
 
                 showDebug(
@@ -262,7 +237,6 @@ if (addMealBtn) {
                 );
 
                 return;
-
             }
 
 
@@ -291,6 +265,28 @@ if (addMealBtn) {
             try {
 
                 // ========================================
+                // CREATE DATE + TIME
+                // ========================================
+
+                const now =
+                    new Date();
+
+
+                const date =
+                    now.toISOString();
+
+
+                const time =
+                    now.toLocaleTimeString(
+                        "en-US",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        }
+                    );
+
+
+                // ========================================
                 // SEND TO DJANGO
                 // ========================================
 
@@ -299,7 +295,8 @@ if (addMealBtn) {
                         "http://127.0.0.1:8000/api/add-meal/",
                         {
 
-                            method: "POST",
+                            method:
+                                "POST",
 
                             headers: {
 
@@ -320,20 +317,17 @@ if (addMealBtn) {
                                     calories:
                                         window.currentMeal.calories,
 
-                                    protein:
-                                        window.currentMeal.protein,
-
-                                    carbohydrate:
-                                        window.currentMeal.carb,
-
-                                    fat:
-                                        window.currentMeal.fat,
-
                                     confidence:
                                         window.currentMeal.confidence,
 
                                     meal:
-                                        mealType
+                                        mealType,
+
+                                    date:
+                                        date,
+
+                                    time:
+                                        time
 
                                 })
 
@@ -356,6 +350,7 @@ if (addMealBtn) {
 
 
                 let data;
+
 
                 try {
 
@@ -402,87 +397,100 @@ if (addMealBtn) {
 
 
                     // ========================================
-                    // SAVE LOCAL BACKUP
+                    // USER-SPECIFIC LOCAL STORAGE
                     // ========================================
 
-                   const currentUserEmail =
-    localStorage.getItem("calorieScanUserEmail") || "guest";
-
-const mealStorageKey =
-    "calorieScanMeals_" + currentUserEmail;
-
-const meals =
-    JSON.parse(
-        localStorage.getItem(mealStorageKey)
-    ) || [];
-
-meals.push({
-
-    food:
-        window.currentMeal.food_name,
-
-    foodName:
-        window.currentMeal.food_name,
-
-    calories:
-        window.currentMeal.calories,
-
-    protein:
-        window.currentMeal.protein,
-
-    carb:
-        window.currentMeal.carb,
-
-    fat:
-        window.currentMeal.fat,
-
-    confidence:
-        window.currentMeal.confidence,
-
-    meal:
-        mealType,
-
-    date:
-        new Date().toISOString(),
-
-    time:
-        new Date().toLocaleTimeString(
-            "en-US",
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        )
-
-});
+                    const currentUserEmail =
+                        localStorage.getItem(
+                            "calorieScanUserEmail"
+                        ) || "guest";
 
 
-localStorage.setItem(
-    mealStorageKey,
-    JSON.stringify(meals)
-);
+                    const mealStorageKey =
+                        "calorieScanMeals_" +
+                        currentUserEmail;
 
 
-console.log(
-    "💾 Meal saved locally!"
-);
+                    const meals =
+                        JSON.parse(
+                            localStorage.getItem(
+                                mealStorageKey
+                            )
+                        ) || [];
 
-console.log(
-    "🍽️ Meal Type:",
-    mealType
-);
 
                     // ========================================
-                    // RESET BUTTON
+                    // SAVE MEAL
                     // ========================================
 
-                    addMealBtn.disabled =
-                        false;
+                    meals.push({
 
-                    addMealBtn.textContent =
-                        "➕ Added to Meal";
+                        food:
+                            window.currentMeal.food_name,
+
+                        foodName:
+                            window.currentMeal.food_name,
+
+                        calories:
+                            window.currentMeal.calories,
+
+                        confidence:
+                            window.currentMeal.confidence,
+
+                        meal:
+                            mealType,
+
+                        date:
+                            date,
+
+                        time:
+                            time
+
+                    });
+
+
+                    // ========================================
+                    // SAVE LOCAL STORAGE
+                    // ========================================
+
+                    localStorage.setItem(
+                        mealStorageKey,
+                        JSON.stringify(meals)
+                    );
+
+
+                    console.log(
+                        "💾 Meal saved locally!"
+                    );
+
+
+                    console.log(
+                        "🍽️ Meal Type:",
+                        mealType
+                    );
+
+
+                    console.log(
+                        "📅 Date:",
+                        date
+                    );
+
+
+                    console.log(
+                        "🕐 Time:",
+                        time
+                    );
+
+
+                    // ========================================
+                    // GO TO DASHBOARD
+                    // ========================================
+
+                    window.location.href =
+                        "dashboard.html";
 
                 }
+
 
                 else {
 
@@ -504,6 +512,7 @@ console.log(
                 }
 
             }
+
 
             catch (error) {
 
@@ -531,6 +540,7 @@ console.log(
 
 }
 
+
 // ========================================
 // CAMERA
 // ========================================
@@ -550,7 +560,8 @@ const captureBtn =
 const closeCameraBtn =
     document.getElementById("closeCameraBtn");
 
-let cameraStream = null;
+let cameraStream =
+    null;
 
 
 // ========================================
@@ -570,11 +581,14 @@ if (cameraBtn) {
                         video: true
                     });
 
+
                 camera.srcObject =
                     cameraStream;
 
+
                 cameraContainer.style.display =
                     "block";
+
 
                 showDebug(
                     "📷 Camera is ready!"
@@ -589,9 +603,11 @@ if (cameraBtn) {
                     error
                 );
 
+
                 showDebug(
                     "❌ Cannot access camera."
                 );
+
 
                 alert(
                     "Cannot access camera. Please allow camera permission."
@@ -621,7 +637,10 @@ if (captureBtn) {
 
 
             const canvas =
-                document.createElement("canvas");
+                document.createElement(
+                    "canvas"
+                );
+
 
             canvas.width =
                 camera.videoWidth;
@@ -631,7 +650,9 @@ if (captureBtn) {
 
 
             const context =
-                canvas.getContext("2d");
+                canvas.getContext(
+                    "2d"
+                );
 
 
             context.drawImage(
@@ -644,9 +665,11 @@ if (captureBtn) {
 
 
             // Show captured image
-
             preview.src =
-                canvas.toDataURL("image/png");
+                canvas.toDataURL(
+                    "image/png"
+                );
+
 
             preview.style.display =
                 "block";
@@ -658,7 +681,6 @@ if (captureBtn) {
 
 
             // Close camera
-
             stopCamera();
 
         }
@@ -678,6 +700,7 @@ if (closeCameraBtn) {
         function () {
 
             stopCamera();
+
 
             showDebug(
                 "📷 Camera closed."
@@ -700,10 +723,12 @@ function stopCamera() {
         cameraStream
             .getTracks()
             .forEach(
-                track => track.stop()
+                track =>
+                    track.stop()
             );
 
-        cameraStream = null;
+        cameraStream =
+            null;
 
     }
 

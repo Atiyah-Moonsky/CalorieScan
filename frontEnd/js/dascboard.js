@@ -3,7 +3,9 @@
 // ===============================
 
 const currentUserEmail =
-    localStorage.getItem("calorieScanUserEmail") || "guest";
+    localStorage.getItem(
+        "calorieScanUserEmail"
+    ) || "guest";
 
 
 // ===============================
@@ -11,7 +13,8 @@ const currentUserEmail =
 // ===============================
 
 const mealStorageKey =
-    "calorieScanMeals_" + currentUserEmail;
+    "calorieScanMeals_" +
+    currentUserEmail;
 
 
 // ===============================
@@ -20,8 +23,11 @@ const mealStorageKey =
 
 let meals =
     JSON.parse(
-        localStorage.getItem(mealStorageKey)
+        localStorage.getItem(
+            mealStorageKey
+        )
     ) || [];
+
 
 // ===============================
 // SAVE MEALS
@@ -48,13 +54,17 @@ function getDailyGoal() {
             "calorieScanUserEmail"
         ) || "guest";
 
+
     const calorieGoalStorageKey =
-        "dailyCalorieGoal_" + currentUserEmail;
+        "dailyCalorieGoal_" +
+        currentUserEmail;
+
 
     const savedGoal =
         localStorage.getItem(
             calorieGoalStorageKey
         );
+
 
     return Number(savedGoal) || 2000;
 
@@ -67,44 +77,76 @@ function getDailyGoal() {
 
 function loadProfileData() {
 
+    const currentUserEmail =
+        localStorage.getItem(
+            "calorieScanUserEmail"
+        ) || "guest";
+
+
+    const profileStorageKey =
+        "calorieProfile_" +
+        currentUserEmail;
+
+
+    const userNameStorageKey =
+        "calorieScanUserName_" +
+        currentUserEmail;
+
+
     const profile =
         JSON.parse(
-            localStorage.getItem("calorieProfile")
+            localStorage.getItem(
+                profileStorageKey
+            )
         ) || {};
 
 
     const userName =
-        document.getElementById("userName");
+        document.getElementById(
+            "userName"
+        );
+
 
     const dailyGoal =
-        document.getElementById("dailyGoal");
+        document.getElementById(
+            "dailyGoal"
+        );
 
 
-    // User Name
+    // ===============================
+    // USER NAME
+    // ===============================
 
-const savedUserName =
-    localStorage.getItem("calorieScanUserName");
-
-if (
-    userName &&
-    savedUserName
-) {
-
-    userName.textContent =
-        savedUserName;
-
-} else if (
-    userName &&
-    profile.fullName
-) {
-
-    userName.textContent =
-        profile.fullName;
-
-}
+    const savedUserName =
+        localStorage.getItem(
+            userNameStorageKey
+        );
 
 
-    // Daily Goal
+    if (
+        userName &&
+        savedUserName
+    ) {
+
+        userName.textContent =
+            savedUserName;
+
+    }
+
+    else if (
+        userName &&
+        profile.fullName
+    ) {
+
+        userName.textContent =
+            profile.fullName;
+
+    }
+
+
+    // ===============================
+    // DAILY CALORIE GOAL
+    // ===============================
 
     const goal =
         getDailyGoal();
@@ -121,79 +163,182 @@ if (
 
 
 // ===============================
+// GET TODAY'S MEALS
+// ===============================
+
+function getTodayMeals() {
+
+    const today =
+        new Date();
+
+
+    return meals.filter(
+        meal => {
+
+            if (!meal.date) {
+                return false;
+            }
+
+
+            const mealDate =
+                new Date(
+                    meal.date
+                );
+
+
+            return (
+
+                mealDate.getFullYear() ===
+                today.getFullYear()
+
+                &&
+
+                mealDate.getMonth() ===
+                today.getMonth()
+
+                &&
+
+                mealDate.getDate() ===
+                today.getDate()
+
+            );
+
+        }
+    );
+
+}
+
+
+// ===============================
 // DISPLAY MEALS
 // ===============================
 
 function displayMeals() {
 
     const tableBody =
-        document.getElementById("mealTableBody");
+        document.getElementById(
+            "mealTableBody"
+        );
 
-    if (!tableBody) return;
 
-    tableBody.innerHTML = "";
+    if (!tableBody) {
+        return;
+    }
+
+
+    tableBody.innerHTML =
+        "";
 
 
     meals
         .slice()
         .reverse()
-        .forEach((meal, index) => {
+        .forEach(
+            (meal, index) => {
 
-            const row =
-                document.createElement("tr");
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
 
-            row.innerHTML = `
-                <td>
-                    ${meal.foodName || "Unknown Food"}
-                </td>
 
-                <td>
-                    ${meal.calories || 0} kcal
-                </td>
+                const realIndex =
+                    meals.length -
+                    1 -
+                    index;
 
-                <td>
-                    ${meal.meal || "Meal"}
-                </td>
 
-                <td>
-                    ${
-                        meal.date
-                            ? new Date(
-                                meal.date
-                              ).toLocaleTimeString(
-                                [],
-                                {
-                                    hour: "2-digit",
-                                    minute: "2-digit"
-                                }
-                              )
-                            : "-"
-                    }
-                </td>
+                let formattedDate =
+                    "-";
 
-                <td>
 
-                    <button
-                        type="button"
-                        onclick="deleteMeal(${index})"
-                        style="
-                            background:red;
-                            color:white;
-                            padding:8px 12px;
-                            border:none;
-                            border-radius:8px;
-                            cursor:pointer;
-                        "
-                    >
-                        DELETE
-                    </button>
+                if (meal.date) {
 
-                </td>
-            `;
+                    formattedDate =
+                        new Date(
+                            meal.date
+                        ).toLocaleDateString(
+                            "en-US",
+                            {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        );
 
-            tableBody.appendChild(row);
+                }
 
-        });
+
+                let formattedTime =
+                    meal.time || "-";
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${
+                            meal.foodName ||
+                            meal.food ||
+                            "Unknown Food"
+                        }
+                    </td>
+
+
+                    <td>
+                        ${
+                            Number(
+                                meal.calories
+                            ) || 0
+                        } kcal
+                    </td>
+
+
+                    <td>
+                        ${
+                            meal.meal ||
+                            "Meal"
+                        }
+                    </td>
+
+
+                    <td>
+                        ${formattedDate}
+                    </td>
+
+
+                    <td>
+                        ${formattedTime}
+                    </td>
+
+
+                    <td>
+
+                        <button
+                            type="button"
+                            onclick="deleteMeal(${realIndex})"
+                            style="
+                                background:red;
+                                color:white;
+                                padding:8px 12px;
+                                border:none;
+                                border-radius:8px;
+                                cursor:pointer;
+                            "
+                        >
+                            DELETE
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(
+                    row
+                );
+
+            }
+        );
 
 
     updateCalories();
@@ -212,16 +357,26 @@ function deleteMeal(index) {
             "Do you want to delete this meal?"
         );
 
-    if (!confirmDelete) return;
+
+    if (!confirmDelete) {
+        return;
+    }
 
 
-    meals.splice(index, 1);
+    meals.splice(
+        index,
+        1
+    );
+
 
     saveMeals();
 
+
     displayMeals();
 
+
     updateMealChart();
+
 
     updateWeeklyChart();
 
@@ -234,32 +389,28 @@ function deleteMeal(index) {
 
 function updateCalories() {
 
-    let total = 0;
-
-    let protein = 0;
-    let carb = 0;
-    let fat = 0;
+    let total =
+        0;
 
 
-    meals.forEach(meal => {
-
-        total +=
-            Number(meal.calories) || 0;
-
-        protein +=
-            parseFloat(meal.protein) || 0;
-
-        carb +=
-            parseFloat(meal.carb) || 0;
-
-        fat +=
-            parseFloat(meal.fat) || 0;
-
-    });
+    // ONLY TODAY
+    const todayMeals =
+        getTodayMeals();
 
 
-    // Get Goal from Profile
+    todayMeals.forEach(
+        meal => {
 
+            total +=
+                Number(
+                    meal.calories
+                ) || 0;
+
+        }
+    );
+
+
+    // Goal
     const goal =
         getDailyGoal();
 
@@ -269,39 +420,26 @@ function updateCalories() {
             "totalCalories"
         );
 
+
     const remainingCalories =
         document.getElementById(
             "remainingCalories"
         );
+
 
     const progress =
         document.getElementById(
             "calorieProgress"
         );
 
+
     const dailyGoal =
         document.getElementById(
             "dailyGoal"
         );
 
-    const proteinValue =
-        document.getElementById(
-            "proteinValue"
-        );
-
-    const carbValue =
-        document.getElementById(
-            "carbValue"
-        );
-
-    const fatValue =
-        document.getElementById(
-            "fatValue"
-        );
-
 
     // Total Calories
-
     if (totalCalories) {
 
         totalCalories.textContent =
@@ -311,7 +449,6 @@ function updateCalories() {
 
 
     // Daily Goal
-
     if (dailyGoal) {
 
         dailyGoal.textContent =
@@ -320,61 +457,33 @@ function updateCalories() {
     }
 
 
-    // Remaining Calories
-
+    // Remaining
     if (remainingCalories) {
 
         remainingCalories.textContent =
             Math.max(
                 goal - total,
                 0
-            ) + " kcal Remaining";
+            ) +
+            " kcal Remaining";
 
     }
 
 
-    // Progress Bar
-
+    // Progress
     if (progress) {
 
         const percentage =
-            Math.min(
-                (total / goal) * 100,
-                100
-            );
+            goal > 0
+                ? Math.min(
+                    (total / goal) * 100,
+                    100
+                )
+                : 0;
+
 
         progress.style.width =
             percentage + "%";
-
-    }
-
-
-    // Protein
-
-    if (proteinValue) {
-
-        proteinValue.textContent =
-            protein + " g";
-
-    }
-
-
-    // Carbohydrate
-
-    if (carbValue) {
-
-        carbValue.textContent =
-            carb + " g";
-
-    }
-
-
-    // Fat
-
-    if (fatValue) {
-
-        fatValue.textContent =
-            fat + " g";
 
     }
 
@@ -395,7 +504,10 @@ function updateMealChart() {
             "mealChart"
         );
 
-    if (!canvas) return;
+
+    if (!canvas) {
+        return;
+    }
 
 
     const breakfast =
@@ -403,15 +515,18 @@ function updateMealChart() {
             "Breakfast"
         );
 
+
     const lunch =
         getMealCalories(
             "Lunch"
         );
 
+
     const dinner =
         getMealCalories(
             "Dinner"
         );
+
 
     const snack =
         getMealCalories(
@@ -428,46 +543,55 @@ function updateMealChart() {
 
     mealChart =
         new Chart(
-
             canvas,
-
             {
 
-                type: "doughnut",
+                type:
+                    "doughnut",
+
 
                 data: {
 
                     labels: [
+
                         "Breakfast",
                         "Lunch",
                         "Dinner",
                         "Snack"
+
                     ],
+
 
                     datasets: [{
 
                         data: [
+
                             breakfast,
                             lunch,
                             dinner,
                             snack
+
                         ]
 
                     }]
 
                 },
 
+
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
-                    maintainAspectRatio: false,
+                    maintainAspectRatio:
+                        false,
 
                     plugins: {
 
                         legend: {
 
-                            position: "right"
+                            position:
+                                "right"
 
                         }
 
@@ -476,7 +600,6 @@ function updateMealChart() {
                 }
 
             }
-
         );
 
 }
@@ -486,24 +609,34 @@ function updateMealChart() {
 // GET CALORIES BY MEAL
 // ===============================
 
-function getMealCalories(mealType) {
+function getMealCalories(
+    mealType
+) {
 
-    return meals
+    return getTodayMeals()
 
         .filter(
             meal =>
-                meal.meal === mealType
+                meal.meal ===
+                mealType
         )
 
         .reduce(
-            (total, meal) =>
-                total +
-                (
-                    Number(
-                        meal.calories
-                    ) || 0
-                ),
+            (
+                total,
+                meal
+            ) => {
 
+                return (
+                    total +
+                    (
+                        Number(
+                            meal.calories
+                        ) || 0
+                    )
+                );
+
+            },
             0
         );
 
@@ -524,7 +657,10 @@ function updateWeeklyChart() {
             "weeklyChart"
         );
 
-    if (!canvas) return;
+
+    if (!canvas) {
+        return;
+    }
 
 
     if (weeklyChart) {
@@ -535,23 +671,28 @@ function updateWeeklyChart() {
 
 
     const scanMeals =
-    JSON.parse(
-        localStorage.getItem(
-            mealStorageKey
-        )
-    ) || [];
+        JSON.parse(
+            localStorage.getItem(
+                mealStorageKey
+            )
+        ) || [];
 
 
     const today =
         new Date();
 
 
-    const labels = [];
+    const labels =
+        [];
 
-    const weeklyCalories = [];
+
+    const weeklyCalories =
+        [];
 
 
-    // 7 DAYS
+    // ===============================
+    // LAST 7 DAYS
+    // ===============================
 
     for (
         let i = 6;
@@ -560,11 +701,14 @@ function updateWeeklyChart() {
     ) {
 
         const date =
-            new Date(today);
+            new Date(
+                today
+            );
 
 
         date.setDate(
-            today.getDate() - i
+            today.getDate() -
+            i
         );
 
 
@@ -572,7 +716,8 @@ function updateWeeklyChart() {
             date.toLocaleDateString(
                 "en-US",
                 {
-                    weekday: "short"
+                    weekday:
+                        "short"
                 }
             );
 
@@ -585,49 +730,54 @@ function updateWeeklyChart() {
         const dailyTotal =
             scanMeals
 
-                .filter(meal => {
+                .filter(
+                    meal => {
 
-                    if (!meal.date) {
-
-                        return false;
-
-                    }
+                        if (!meal.date) {
+                            return false;
+                        }
 
 
-                    const mealDate =
-                        new Date(
-                            meal.date
+                        const mealDate =
+                            new Date(
+                                meal.date
+                            );
+
+
+                        return (
+
+                            mealDate.getFullYear() ===
+                            date.getFullYear()
+
+                            &&
+
+                            mealDate.getMonth() ===
+                            date.getMonth()
+
+                            &&
+
+                            mealDate.getDate() ===
+                            date.getDate()
+
                         );
 
-
-                    return (
-
-                        mealDate.getFullYear() ===
-                        date.getFullYear()
-
-                        &&
-
-                        mealDate.getMonth() ===
-                        date.getMonth()
-
-                        &&
-
-                        mealDate.getDate() ===
-                        date.getDate()
-
-                    );
-
-                })
+                    }
+                )
 
                 .reduce(
-                    (total, meal) => {
+                    (
+                        total,
+                        meal
+                    ) => {
 
-                        return total +
+                        return (
+                            total +
                             (
                                 Number(
                                     meal.calories
                                 ) || 0
-                            );
+                            )
+                        );
 
                     },
                     0
@@ -641,21 +791,24 @@ function updateWeeklyChart() {
     }
 
 
+    // ===============================
     // CREATE CHART
+    // ===============================
 
     weeklyChart =
         new Chart(
-
             canvas,
-
             {
 
-                type: "bar",
+                type:
+                    "bar",
+
 
                 data: {
 
                     labels:
                         labels,
+
 
                     datasets: [{
 
@@ -669,11 +822,14 @@ function updateWeeklyChart() {
 
                 },
 
+
                 options: {
 
-                    responsive: true,
+                    responsive:
+                        true,
 
-                    maintainAspectRatio: false,
+                    maintainAspectRatio:
+                        false,
 
                     scales: {
 
@@ -689,7 +845,6 @@ function updateWeeklyChart() {
                 }
 
             }
-
         );
 
 }
@@ -706,7 +861,10 @@ function showDate() {
             "todayDate"
         );
 
-    if (!dateElement) return;
+
+    if (!dateElement) {
+        return;
+    }
 
 
     const today =
@@ -717,13 +875,14 @@ function showDate() {
         today.toLocaleDateString(
             "en-US",
             {
+                day:
+                    "numeric",
 
-                day: "numeric",
+                month:
+                    "short",
 
-                month: "short",
-
-                year: "numeric"
-
+                year:
+                    "numeric"
             }
         );
 
@@ -744,9 +903,295 @@ document.addEventListener(
 
         displayMeals();
 
+        updateCalories();
+
         updateMealChart();
 
         updateWeeklyChart();
+
+    }
+);
+
+// ===============================
+// FOOD RECOMMENDATION
+// ===============================
+
+const recommendedFoods = [
+
+    {
+        name: "ข้าวกะเพราไก่",
+        calories: 550,
+        icon: "🍗"
+    },
+
+    {
+        name: "ข้าวผัดไก่",
+        calories: 520,
+        icon: "🍚"
+    },
+
+    {
+        name: "ก๋วยเตี๋ยวไก่",
+        calories: 450,
+        icon: "🍜"
+    },
+
+    {
+        name: "ข้าวมันไก่",
+        calories: 550,
+        icon: "🍗"
+    },
+
+    {
+        name: "สลัดอกไก่",
+        calories: 380,
+        icon: "🥗"
+    },
+
+    {
+        name: "ข้าวต้มไก่",
+        calories: 350,
+        icon: "🍲"
+    },
+
+    {
+        name: "ข้าวไข่เจียว",
+        calories: 480,
+        icon: "🍳"
+    },
+
+    {
+        name: "ผัดซีอิ๊วไก่",
+        calories: 600,
+        icon: "🍜"
+    },
+
+    {
+        name: "ยำวุ้นเส้น",
+        calories: 300,
+        icon: "🥗"
+    }
+
+];
+
+
+// ===============================
+// GET REMAINING CALORIES
+// ===============================
+
+function getRemainingCalories() {
+
+    const goal =
+        getDailyGoal();
+
+
+    const todayMeals =
+        getTodayMeals();
+
+
+    const todayCalories =
+        todayMeals.reduce(
+            (
+                total,
+                meal
+            ) => {
+
+                return (
+                    total +
+                    (
+                        Number(
+                            meal.calories
+                        ) || 0
+                    )
+                );
+
+            },
+            0
+        );
+
+
+    return Math.max(
+        goal - todayCalories,
+        0
+    );
+
+}
+
+
+// ===============================
+// DISPLAY FOOD RECOMMENDATIONS
+// ===============================
+
+function displayFoodRecommendations() {
+
+    const list =
+        document.getElementById(
+            "foodRecommendationList"
+        );
+
+
+    const remainingElement =
+        document.getElementById(
+            "foodRemainingCalories"
+        );
+
+
+    if (!list) {
+        return;
+    }
+
+
+    const remaining =
+        getRemainingCalories();
+
+
+    if (remainingElement) {
+
+        remainingElement.textContent =
+            remaining;
+
+    }
+
+
+    // ===============================
+    // FIND FOODS THAT FIT
+    // ===============================
+
+    let suitableFoods =
+        recommendedFoods.filter(
+            food =>
+                food.calories <= remaining
+        );
+
+
+    // ===============================
+    // IF NOTHING FITS
+    // ===============================
+
+    if (
+        suitableFoods.length === 0
+    ) {
+
+        list.innerHTML = `
+
+            <div class="no-food-recommendation">
+
+                😅 ตอนนี้เหลือ
+                <strong>
+                    ${remaining} kcal
+                </strong>
+                เท่านั้น
+
+                <br>
+
+                ลองเลือกอาหารมื้อเล็ก ๆ
+                หรือรอวันใหม่ได้เลย 💜
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    // ===============================
+    // RANDOM 3 FOODS
+    // ===============================
+
+    suitableFoods =
+        suitableFoods
+            .sort(
+                () =>
+                    Math.random() - 0.5
+            )
+            .slice(
+                0,
+                3
+            );
+
+
+    list.innerHTML =
+        "";
+
+
+    suitableFoods.forEach(
+        food => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "food-recommendation-item";
+
+
+            item.innerHTML = `
+
+                <div class="food-icon">
+                    ${food.icon}
+                </div>
+
+                <h3>
+                    ${food.name}
+                </h3>
+
+                <p>
+                    ${food.calories} kcal
+                </p>
+
+            `;
+
+
+            list.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+
+// ===============================
+// RANDOM FOOD BUTTON
+// ===============================
+
+function randomizeFoodRecommendations() {
+
+    displayFoodRecommendations();
+
+}
+
+
+// ===============================
+// START FOOD RECOMMENDATION
+// ===============================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        displayFoodRecommendations();
+
+
+        const randomFoodBtn =
+            document.getElementById(
+                "randomFoodBtn"
+            );
+
+
+        if (randomFoodBtn) {
+
+            randomFoodBtn.addEventListener(
+                "click",
+                randomizeFoodRecommendations
+            );
+
+        }
 
     }
 );

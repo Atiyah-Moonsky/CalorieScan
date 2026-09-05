@@ -10,25 +10,35 @@
 
     <title>Meal History - CalorieScan</title>
 
+
     <!-- Google Font -->
+
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
+
     <!-- Font Awesome -->
+
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     >
 
+
     <!-- Dashboard CSS -->
-    <link rel="stylesheet" href="css/dashboard.css">
+
+    <link
+        rel="stylesheet"
+        href="css/dashboard.css"
+    >
 
 </head>
 
 
 <body>
+
 
 <div class="dashboard-wrapper">
 
@@ -37,81 +47,118 @@
 
     <aside class="sidebar">
 
+
         <div class="logo">
-            🌙 <span>CalorieScan</span>
+
+            🌙
+
+            <span>
+                CalorieScan
+            </span>
+
         </div>
 
 
         <nav class="sidebar-menu">
 
-            <a href="dashboard.html"
-               class="menu-item">
+
+            <a
+                href="dashboard.html"
+                class="menu-item"
+            >
 
                 <i class="fa-solid fa-house"></i>
 
-                <span>Dashboard</span>
+                <span>
+                    Dashboard
+                </span>
 
             </a>
 
 
-            <a href="scan.html"
-               class="menu-item">
+            <a
+                href="scan.html"
+                class="menu-item"
+            >
 
                 <i class="fa-solid fa-camera"></i>
 
-                <span>Scan Food</span>
+                <span>
+                    Scan Food
+                </span>
 
             </a>
 
 
-            <a href="meal-history.html"
-               class="menu-item active">
+            <a
+                href="meal-history.html"
+                class="menu-item active"
+            >
 
                 <i class="fa-solid fa-clock-rotate-left"></i>
 
-                <span>Meal History</span>
+                <span>
+                    Meal History
+                </span>
 
             </a>
 
 
-            <a href="#"
-               class="menu-item">
+            <a
+                href="statistics.html"
+                class="menu-item"
+            >
 
                 <i class="fa-solid fa-chart-column"></i>
 
-                <span>Statistics</span>
+                <span>
+                    Statistics
+                </span>
 
             </a>
 
 
-            <a href="#"
-               class="menu-item">
+            <a
+                href="goal.html"
+                class="menu-item"
+            >
 
                 <i class="fa-solid fa-bullseye"></i>
 
-                <span>Goal</span>
+                <span>
+                    Goal
+                </span>
 
             </a>
 
 
-            <a href="profile.html"
-               class="menu-item">
+            <a
+                href="profile.html"
+                class="menu-item"
+            >
 
                 <i class="fa-solid fa-user"></i>
 
-                <span>Profile</span>
+                <span>
+                    Profile
+                </span>
 
             </a>
 
 
-            <a href="#"
-               class="menu-item">
+            <a
+                href="#"
+                class="menu-item"
+            >
 
                 <i class="fa-solid fa-gear"></i>
 
-                <span>Settings</span>
+                <span>
+                    Settings
+                </span>
 
             </a>
+
 
         </nav>
 
@@ -127,6 +174,7 @@
         <!-- ================= HEADER ================= -->
 
         <div class="dashboard-header">
+
 
             <div>
 
@@ -149,6 +197,7 @@
 
             </div>
 
+
         </div>
 
 
@@ -161,6 +210,7 @@
             <!-- TOTAL MEALS -->
 
             <div class="dashboard-card">
+
 
                 <div class="card-title">
 
@@ -185,6 +235,7 @@
 
                 </div>
 
+
             </div>
 
 
@@ -192,6 +243,7 @@
             <!-- TOTAL CALORIES -->
 
             <div class="dashboard-card">
+
 
                 <div class="card-title">
 
@@ -216,7 +268,9 @@
 
                 </div>
 
+
             </div>
+
 
         </section>
 
@@ -228,6 +282,7 @@
 
 
             <div class="card-title">
+
 
                 <h2>
                     🍽️ All Meals
@@ -242,13 +297,16 @@
                     Clear All
                 </button>
 
+
             </div>
 
 
 
             <div class="table-wrapper">
 
+
                 <table>
+
 
                     <thead>
 
@@ -263,19 +321,15 @@
                             </th>
 
                             <th>
-                                Protein
-                            </th>
-
-                            <th>
-                                Carbs
-                            </th>
-
-                            <th>
-                                Fat
+                                Meal
                             </th>
 
                             <th>
                                 Date
+                            </th>
+
+                            <th>
+                                Time
                             </th>
 
                             <th>
@@ -291,9 +345,12 @@
 
                     </tbody>
 
+
                 </table>
 
+
             </div>
+
 
         </section>
 
@@ -316,12 +373,15 @@
 
     </main>
 
+
 </div>
 
 
 
 <!-- ================= JAVASCRIPT ================= -->
+
 <script src="js/userStorage.js"></script>
+
 
 <script>
 
@@ -331,7 +391,9 @@
 // ========================================
 
 const todayDate =
-    document.getElementById("todayDate");
+    document.getElementById(
+        "todayDate"
+    );
 
 
 if (todayDate) {
@@ -355,20 +417,35 @@ if (todayDate) {
 
 
 // ========================================
+// CURRENT USER
+// ========================================
+
+const currentUserEmail =
+    localStorage.getItem(
+        "calorieScanUserEmail"
+    ) || "guest";
+
+
+
+// ========================================
+// USER-SPECIFIC MEALS
+// ========================================
+
+const mealStorageKey =
+    "calorieScanMeals_" +
+    currentUserEmail;
+
+
+
+// ========================================
 // GET MEALS
 // ========================================
 
-// ใช้ชื่อเดียวกับ scan.js
-
-const currentUserEmail =
-    localStorage.getItem("calorieScanUserEmail") || "guest";
-
-const mealStorageKey =
-    "calorieScanMeals_" + currentUserEmail;
-
 let meals =
     JSON.parse(
-        localStorage.getItem(mealStorageKey)
+        localStorage.getItem(
+            mealStorageKey
+        )
     ) || [];
 
 
@@ -378,6 +455,7 @@ let meals =
 // ========================================
 
 function displayMeals() {
+
 
     const table =
         document.getElementById(
@@ -405,7 +483,7 @@ function displayMeals() {
             <tr>
 
                 <td
-                    colspan="7"
+                    colspan="6"
                     style="
                         text-align:center;
                         padding:40px;
@@ -445,7 +523,10 @@ function displayMeals() {
         .slice()
         .reverse()
         .forEach(
-            function(meal, reverseIndex) {
+            function(
+                meal,
+                reverseIndex
+            ) {
 
 
                 // Original index
@@ -461,9 +542,13 @@ function displayMeals() {
                     );
 
 
-                // Date
 
-                let mealDate = "-";
+                // ========================================
+                // DATE
+                // ========================================
+
+                let formattedDate =
+                    "-";
 
 
                 if (meal.date) {
@@ -474,52 +559,90 @@ function displayMeals() {
                         );
 
 
-                    mealDate =
-                        date.toLocaleString(
-                            "en-US",
-                            {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit"
-                            }
-                        );
+                    if (
+                        !isNaN(
+                            date.getTime()
+                        )
+                    ) {
+
+                        formattedDate =
+                            date.toLocaleDateString(
+                                "en-US",
+                                {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric"
+                                }
+                            );
+
+                    }
 
                 }
 
 
+
+                // ========================================
+                // TIME
+                // ========================================
+
+                let formattedTime =
+                    meal.time || "-";
+
+
+
+                // ========================================
+                // FOOD NAME
+                // ========================================
+
+                const foodName =
+                    meal.foodName ||
+                    meal.food ||
+                    "Unknown Food";
+
+
+
+                // ========================================
+                // MEAL TYPE
+                // ========================================
+
+                const mealType =
+                    meal.meal ||
+                    "Meal";
+
+
+
+                // ========================================
+                // CREATE ROW
+                // ========================================
+
                 row.innerHTML = `
 
                     <td>
-                        ${meal.foodName || "-"}
+                        ${foodName}
                     </td>
 
 
                     <td>
-                        ${Number(
-                            meal.calories
-                        ) || 0} kcal
+                        ${
+                            Number(
+                                meal.calories
+                            ) || 0
+                        } kcal
                     </td>
 
 
                     <td>
-                        ${meal.protein || "-"}
+                        ${mealType}
                     </td>
 
 
                     <td>
-                        ${meal.carb || "-"}
+                        ${formattedDate}
                     </td>
 
 
                     <td>
-                        ${meal.fat || "-"}
-                    </td>
-
-
-                    <td>
-                        ${mealDate}
+                        ${formattedTime}
                     </td>
 
 
@@ -547,7 +670,10 @@ function displayMeals() {
                 `;
 
 
-                table.appendChild(row);
+                table.appendChild(
+                    row
+                );
+
 
             }
         );
@@ -558,10 +684,18 @@ function displayMeals() {
     // TOTAL MEALS
     // ========================================
 
-    document.getElementById(
-        "totalMeals"
-    ).textContent =
-        meals.length;
+    const totalMeals =
+        document.getElementById(
+            "totalMeals"
+        );
+
+
+    if (totalMeals) {
+
+        totalMeals.textContent =
+            meals.length;
+
+    }
 
 
 
@@ -571,34 +705,48 @@ function displayMeals() {
 
     const totalCalories =
         meals.reduce(
-            function(total, meal) {
+            function(
+                total,
+                meal
+            ) {
 
-                return total +
+                return (
+                    total +
                     (
                         Number(
                             meal.calories
                         ) || 0
-                    );
+                    )
+                );
 
             },
             0
         );
 
 
-    document.getElementById(
-        "historyCalories"
-    ).textContent =
-        totalCalories;
+    const historyCalories =
+        document.getElementById(
+            "historyCalories"
+        );
+
+
+    if (historyCalories) {
+
+        historyCalories.textContent =
+            totalCalories;
+
+    }
 
 }
 
 
 
 // ========================================
-// DELETE MEAL
+// DELETE ONE MEAL
 // ========================================
 
 function deleteMeal(index) {
+
 
     const confirmDelete =
         confirm(
@@ -618,9 +766,10 @@ function deleteMeal(index) {
 
 
     localStorage.setItem(
-    mealStorageKey,
-    JSON.stringify(meals)
-   );
+        mealStorageKey,
+        JSON.stringify(meals)
+    );
+
 
     displayMeals();
 
@@ -629,7 +778,7 @@ function deleteMeal(index) {
 
 
 // ========================================
-// CLEAR ALL
+// CLEAR ALL MEALS
 // ========================================
 
 const clearMeals =
@@ -671,13 +820,12 @@ if (clearMeals) {
 
 
             localStorage.setItem(
-               mealStorageKey,
-               JSON.stringify(meals)
-          );
+                mealStorageKey,
+                JSON.stringify(meals)
+            );
 
 
             displayMeals();
-
 
         }
     );
@@ -691,6 +839,7 @@ if (clearMeals) {
 // ========================================
 
 displayMeals();
+
 
 </script>
 

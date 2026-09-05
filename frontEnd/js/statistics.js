@@ -6,24 +6,55 @@ document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+
         // ========================================
-        // GET DATA
+        // CURRENT USER
+        // ========================================
+
+        const currentUserEmail =
+            localStorage.getItem(
+                "calorieScanUserEmail"
+            ) || "guest";
+
+
+        // ========================================
+        // USER-SPECIFIC MEALS
+        // ========================================
+
+        const mealStorageKey =
+            "calorieScanMeals_" +
+            currentUserEmail;
+
+
+        // ========================================
+        // GET MEALS
         // ========================================
 
         const meals =
             JSON.parse(
                 localStorage.getItem(
-                    "calorieScanMeals"
+                    mealStorageKey
                 )
             ) || [];
+
+
+
+        // ========================================
+        // GET PROFILE
+        // ========================================
+
+        const profileStorageKey =
+            "calorieProfile_" +
+            currentUserEmail;
 
 
         const profile =
             JSON.parse(
                 localStorage.getItem(
-                    "calorieProfile"
+                    profileStorageKey
                 )
             ) || {};
+
 
 
         // ========================================
@@ -51,43 +82,29 @@ document.addEventListener(
         }
 
 
+
         // ========================================
-        // CALCULATE TOTALS
+        // CALCULATE TOTAL CALORIES
         // ========================================
 
         let totalCalories = 0;
-
-        let totalProtein = 0;
-
-        let totalCarb = 0;
-
-        let totalFat = 0;
 
 
         meals.forEach(
             function (meal) {
 
                 totalCalories +=
-                    Number(meal.calories) || 0;
-
-
-                totalProtein +=
-                    parseFloat(meal.protein) || 0;
-
-
-                totalCarb +=
-                    parseFloat(meal.carb) || 0;
-
-
-                totalFat +=
-                    parseFloat(meal.fat) || 0;
+                    Number(
+                        meal.calories
+                    ) || 0;
 
             }
         );
 
 
+
         // ========================================
-        // AVERAGE
+        // AVERAGE CALORIES
         // ========================================
 
         let averageCalories = 0;
@@ -104,38 +121,43 @@ document.addEventListener(
         }
 
 
+
         // ========================================
-        // DISPLAY
+        // DISPLAY TOTAL CALORIES
         // ========================================
 
-        document.getElementById(
-            "totalCalories"
-        ).textContent =
-            totalCalories;
+        const totalCaloriesElement =
+            document.getElementById(
+                "totalCalories"
+            );
 
 
-        document.getElementById(
-            "averageCalories"
-        ).textContent =
-            averageCalories;
+        if (totalCaloriesElement) {
+
+            totalCaloriesElement.textContent =
+                totalCalories;
+
+        }
 
 
-        document.getElementById(
-            "proteinTotal"
-        ).textContent =
-            totalProtein + " g";
+
+        // ========================================
+        // DISPLAY AVERAGE CALORIES
+        // ========================================
+
+        const averageCaloriesElement =
+            document.getElementById(
+                "averageCalories"
+            );
 
 
-        document.getElementById(
-            "carbTotal"
-        ).textContent =
-            totalCarb + " g";
+        if (averageCaloriesElement) {
 
+            averageCaloriesElement.textContent =
+                averageCalories;
 
-        document.getElementById(
-            "fatTotal"
-        ).textContent =
-            totalFat + " g";
+        }
+
 
 
         // ========================================
@@ -151,11 +173,17 @@ document.addEventListener(
             new Date();
 
 
+
+        // ========================================
+        // LAST 7 DAYS
+        // ========================================
+
         for (
             let i = 6;
             i >= 0;
             i--
         ) {
+
 
             const date =
                 new Date(today);
@@ -175,11 +203,18 @@ document.addEventListener(
                 );
 
 
-            labels.push(label);
+            labels.push(
+                label
+            );
 
 
             let dailyCalories = 0;
 
+
+
+            // ========================================
+            // FIND MEALS FOR THIS DAY
+            // ========================================
 
             meals.forEach(
                 function (meal) {
@@ -190,7 +225,9 @@ document.addEventListener(
 
 
                     const mealDate =
-                        new Date(meal.date);
+                        new Date(
+                            meal.date
+                        );
 
 
                     if (
@@ -228,6 +265,7 @@ document.addEventListener(
         }
 
 
+
         // ========================================
         // CHART
         // ========================================
@@ -240,20 +278,26 @@ document.addEventListener(
 
         if (canvas) {
 
+
             new Chart(
                 canvas,
                 {
 
-                    type: "bar",
+                    type:
+                        "bar",
+
 
                     data: {
 
-                        labels: labels,
+                        labels:
+                            labels,
+
 
                         datasets: [{
 
                             label:
                                 "Calories",
+
 
                             data:
                                 weeklyCalories
@@ -262,12 +306,16 @@ document.addEventListener(
 
                     },
 
+
                     options: {
 
-                        responsive: true,
+                        responsive:
+                            true,
+
 
                         maintainAspectRatio:
                             false,
+
 
                         scales: {
 
@@ -288,6 +336,33 @@ document.addEventListener(
         }
 
 
+
+        // ========================================
+        // CALORIE GOAL
+        // ========================================
+
+        const calorieGoalStorageKey =
+            "dailyCalorieGoal_" +
+            currentUserEmail;
+
+
+        const savedGoal =
+            localStorage.getItem(
+                calorieGoalStorageKey
+            );
+
+
+        const goal =
+            Number(
+                savedGoal
+            ) ||
+            Number(
+                profile.calorieGoal
+            ) ||
+            2000;
+
+
+
         // ========================================
         // INSIGHT
         // ========================================
@@ -298,19 +373,73 @@ document.addEventListener(
             );
 
 
-        const goal =
-            Number(
-                profile.calorieGoal
-            ) || 2000;
-
-
         if (
             message &&
             meals.length > 0
         ) {
 
+
+            // ========================================
+            // USE TODAY'S CALORIES
+            // ========================================
+
+            const today =
+                new Date();
+
+
+            let todayCalories = 0;
+
+
+            meals.forEach(
+                function (meal) {
+
+                    if (!meal.date) {
+                        return;
+                    }
+
+
+                    const mealDate =
+                        new Date(
+                            meal.date
+                        );
+
+
+                    if (
+
+                        mealDate.getFullYear() ===
+                        today.getFullYear()
+
+                        &&
+
+                        mealDate.getMonth() ===
+                        today.getMonth()
+
+                        &&
+
+                        mealDate.getDate() ===
+                        today.getDate()
+
+                    ) {
+
+                        todayCalories +=
+                            Number(
+                                meal.calories
+                            ) || 0;
+
+                    }
+
+                }
+            );
+
+
+
+            // ========================================
+            // SHOW MESSAGE
+            // ========================================
+
             if (
-                totalCalories > goal
+                todayCalories >
+                goal
             ) {
 
                 message.textContent =

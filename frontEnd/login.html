@@ -150,15 +150,14 @@ loginForm.addEventListener("submit", async function(event) {
             console.log("🚀 GOING TO DASHBOARD!");
 
             localStorage.setItem(
-                "calorieScanUserName",
-                data.username
-            );
+                "calorieScanUserName_" + email,
+                 data.username
+         );
 
             localStorage.setItem(
-                "calorieScanUserEmail",
-                 email
-            );
-
+               "calorieScanUserEmail",
+                email
+         );
             window.location.href = "dashboard.html";
 
         } else {

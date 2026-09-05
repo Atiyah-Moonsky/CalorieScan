@@ -17,33 +17,17 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from api.views import (
-    signup,
-    login_user,
-    add_meal
-)
+from api.views import (signup,login_user,add_meal)
 
 
 urlpatterns = [
 
-    path(
-        'admin/',
-        admin.site.urls
-    ),
+    path('admin/',admin.site.urls),
 
-    path(
-        'api/signup/',
-        signup
-    ),
+    path('api/signup/',signup),
 
-    path(
-        'api/login/',
-        login_user
-    ),
+    path('api/login/',login_user),
 
-    path(
-        'api/add-meal/',
-        add_meal
-    ),
+    path('api/add-meal/',add_meal),
 
 ]

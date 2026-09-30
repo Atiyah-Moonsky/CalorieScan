@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    {% load static %}
 
     <meta charset="UTF-8">
 
@@ -9,7 +10,7 @@
 
     <title>Login - CalorieScan</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="{% static 'scanner/css/style.css' %}">
 
 </head>
 
@@ -96,7 +97,7 @@
 
             Don't have an account?
 
-            <a href="signup.html">
+            <a href="signup">
                 Sign Up
             </a>
 

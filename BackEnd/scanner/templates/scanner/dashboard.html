@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    {% load static %}
 
     <meta charset="UTF-8">
 
@@ -32,8 +33,7 @@
     <!-- Dashboard CSS -->
 
     <link
-        rel="stylesheet"
-        href="css/dashboard.css"
+        rel="stylesheet" href="{% static 'scanner/css/dashboard.css' %}"
     >
 
 </head>
@@ -66,7 +66,7 @@
         <span>Dashboard</span>
     </a>
 
-    <a href="scan.html" class="menu-item">
+    <a href="/scan/" class="menu-item">
         <i class="fa-solid fa-camera"></i>
         <span>Scan Food</span>
     </a>
@@ -422,8 +422,8 @@
 
 <!-- Dashboard JS -->
 
-<script src="js/userStorage.js"></script>
-<script src="js/dascboard.js"></script>
+<script src="{% static 'scanner/js/userStorage.js' %}"></script>
+<script src="{% static 'scanner/js/dascboard.js' %}"></script>
 
 
 

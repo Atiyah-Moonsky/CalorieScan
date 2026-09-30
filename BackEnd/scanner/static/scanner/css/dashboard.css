@@ -307,7 +307,7 @@ body {
 .progress-fill {
     height: 100%;
 
-    width: 62.5%;
+    width: 0%;
 
     background: linear-gradient(
         90deg,

@@ -41,6 +41,13 @@ const mealTypeElement =
 
 
 // ========================================
+// TEMPORARY IMAGE FILE
+// ========================================
+
+let selectedImageFile = null;
+
+
+// ========================================
 // DEBUG MESSAGE
 // ========================================
 
@@ -71,6 +78,9 @@ if (imageInput) {
                 return;
             }
 
+            selectedImageFile =
+                file;
+
             preview.src =
                 URL.createObjectURL(file);
 
@@ -95,30 +105,34 @@ if (scanBtn) {
 
     scanBtn.addEventListener(
         "click",
-        function (event) {
+        async function (event) {
 
             event.preventDefault();
+
 
             showDebug(
                 "🔵 Scan started..."
             );
 
 
-            // Check image
-            if (
-                !imageInput ||
-                imageInput.files.length === 0
-            ) {
+            // ========================================
+            // CHECK IMAGE
+            // ========================================
+
+            if (!selectedImageFile) {
 
                 showDebug(
-                    "⚠️ Please select an image first."
+                    "⚠️ Please select or capture an image first."
                 );
 
                 return;
             }
 
 
-            // Show loading
+            // ========================================
+            // SHOW LOADING
+            // ========================================
+
             if (loading) {
 
                 loading.style.display =
@@ -133,85 +147,160 @@ if (scanBtn) {
 
 
             // ========================================
-            // SIMULATE AI
+            // SEND IMAGE TO DJANGO
             // ========================================
 
-            setTimeout(
-                function () {
+            try {
 
-                    if (loading) {
-
-                        loading.style.display =
-                            "none";
-
-                    }
+                const formData =
+                    new FormData();
 
 
-                    // ========================================
-                    // AI RESULT
-                    // ========================================
-
-                    const foodName =
-                        "Fried Rice 🍚";
-
-                    const calories =
-                        520;
-
-                    const confidence =
-                        "97%";
+                formData.append(
+                    "image",
+                    selectedImageFile
+                );
 
 
-                    // ========================================
-                    // SHOW RESULT
-                    // ========================================
-
-                    if (foodNameElement) {
-
-                        foodNameElement.textContent =
-                            foodName;
-
-                    }
-
-                    if (caloriesElement) {
-
-                        caloriesElement.textContent =
-                            calories + " kcal";
-
-                    }
-
-                    if (confidenceElement) {
-
-                        confidenceElement.textContent =
-                            confidence;
-
-                    }
-
-
-                    showDebug(
-                        "✅ Scan complete! Choose Meal Type 👇"
+                const response =
+                    await fetch(
+                        "/api/scan-food/",
+                        {
+                            method: "POST",
+                            credentials: "include",
+                            body: formData
+                        }
                     );
 
 
-                    // ========================================
-                    // STORE TEMPORARY RESULT
-                    // ========================================
+                const data =
+                    await response.json();
 
-                    window.currentMeal = {
 
-                        food_name:
-                            foodName,
+                console.log(
+                    "🤖 Roboflow result:",
+                    data
+                );
 
-                        calories:
-                            calories,
 
-                        confidence:
-                            confidence
+                // ========================================
+                // HIDE LOADING
+                // ========================================
 
-                    };
+                if (loading) {
 
-                },
-                2000
-            );
+                    loading.style.display =
+                        "none";
+
+                }
+
+
+                // ========================================
+                // CHECK RESULT
+                // ========================================
+
+                if (!data.success) {
+
+                    showDebug(
+                        "❌ " +
+                        (
+                            data.message ||
+                            "Food scan failed."
+                        )
+                    );
+
+                    return;
+                }
+
+
+                // ========================================
+                // GET AI RESULT
+                // ========================================
+
+                const foodName =
+                    data.food_name;
+
+                const confidence =
+                    data.confidence;
+
+
+                const calories =
+                    data.calories;
+
+
+                // ========================================
+                // SHOW RESULT
+                // ========================================
+
+                if (foodNameElement) {
+
+                    foodNameElement.textContent =
+                        foodName;
+
+                }
+
+
+                if (caloriesElement) {
+
+                    caloriesElement.textContent =
+                        calories + " kcal";
+
+                }
+
+
+                if (confidenceElement) {
+
+                    confidenceElement.textContent =
+                        confidence + "%";
+
+                }
+
+
+                showDebug(
+                    "✅ Scan complete! Choose Meal Type 👇"
+                );
+
+
+                // ========================================
+                // STORE TEMPORARY RESULT
+                // ========================================
+
+                window.currentMeal = {
+
+                    food_name:
+                        foodName,
+
+                    calories:
+                        calories,
+
+                    confidence:
+                        confidence
+
+                };
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "❌ Scan error:",
+                    error
+                );
+
+
+                if (loading) {
+
+                    loading.style.display =
+                        "none";
+
+                }
+
+
+                showDebug(
+                    "❌ Cannot connect to AI server."
+                );
+
+            }
 
         }
     );
@@ -292,7 +381,7 @@ if (addMealBtn) {
 
                 const response =
                     await fetch(
-                        "http://127.0.0.1:8000/api/add-meal/",
+                        "/api/add-meal/",
                         {
 
                             method:
@@ -464,30 +553,12 @@ if (addMealBtn) {
                     );
 
 
-                    console.log(
-                        "🍽️ Meal Type:",
-                        mealType
-                    );
-
-
-                    console.log(
-                        "📅 Date:",
-                        date
-                    );
-
-
-                    console.log(
-                        "🕐 Time:",
-                        time
-                    );
-
-
                     // ========================================
                     // GO TO DASHBOARD
                     // ========================================
 
                     window.location.href =
-                        "dashboard.html";
+                        "/dashboard/";
 
                 }
 
@@ -664,7 +735,31 @@ if (captureBtn) {
             );
 
 
-            // Show captured image
+            // ========================================
+            // SAVE CAPTURED IMAGE AS FILE
+            // ========================================
+
+            canvas.toBlob(
+                function (blob) {
+
+                    selectedImageFile =
+                        new File(
+                            [blob],
+                            "captured-food.png",
+                            {
+                                type: "image/png"
+                            }
+                        );
+
+                },
+                "image/png"
+            );
+
+
+            // ========================================
+            // SHOW CAPTURED IMAGE
+            // ========================================
+
             preview.src =
                 canvas.toDataURL(
                     "image/png"

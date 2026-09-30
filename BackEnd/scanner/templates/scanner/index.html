@@ -2,13 +2,13 @@
 <html lang="en">
 
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>CalorieScan AI</title>
 
-    <link rel="stylesheet" href="css/style.css">
-
+    <link rel="stylesheet" href="{% static 'scanner/css/style.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
@@ -35,11 +35,11 @@
 
             <div class="buttons">
 
-    <a href="login.html" class="login-btn">
+    <a href="/login/" class="login-btn">
         Login
     </a>
 
-    <a href="signup.html" class="signup-btn">
+    <a href="/signup/" class="signup-btn">
         Sign Up
     </a>
 

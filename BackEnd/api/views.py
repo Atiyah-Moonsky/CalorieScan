@@ -3,7 +3,11 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Meal
+
 import json
+import os
+import base64
+import requests
 
 
 # =========================
@@ -23,18 +27,12 @@ def signup(request):
             email = data.get("email")
             password = data.get("password")
 
-
-            # Check empty fields
-
             if not username or not email or not password:
 
                 return JsonResponse({
                     "success": False,
                     "message": "Please fill in all fields."
                 })
-
-
-            # Check username already exists
 
             if User.objects.filter(username=username).exists():
 
@@ -43,9 +41,6 @@ def signup(request):
                     "message": "Username already exists."
                 })
 
-
-            # Check email already exists
-
             if User.objects.filter(email=email).exists():
 
                 return JsonResponse({
@@ -53,20 +48,13 @@ def signup(request):
                     "message": "Email already exists."
                 })
 
-
-            # Create user
-
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 password=password
             )
 
-
-            # Login automatically
-
             login(request, user)
-
 
             return JsonResponse({
                 "success": True,
@@ -74,14 +62,12 @@ def signup(request):
                 "username": user.username
             })
 
-
         except Exception as error:
 
             return JsonResponse({
                 "success": False,
                 "message": str(error)
             })
-
 
     return JsonResponse({
         "success": False,
@@ -140,6 +126,7 @@ def login_user(request):
         "message": "POST request required."
     })
 
+
 # =========================
 # ADD MEAL
 # =========================
@@ -154,16 +141,12 @@ def add_meal(request):
             "message": "POST request required."
         })
 
-
-    # Check login
-
     if not request.user.is_authenticated:
 
         return JsonResponse({
             "success": False,
             "message": "Please login first."
         })
-
 
     try:
 
@@ -172,9 +155,6 @@ def add_meal(request):
         food_name = data.get("food_name")
         calories = data.get("calories")
 
-
-        # Check data
-
         if not food_name or calories is None:
 
             return JsonResponse({
@@ -182,19 +162,11 @@ def add_meal(request):
                 "message": "Food name and calories are required."
             })
 
-
-        # Save meal
-
         meal = Meal.objects.create(
-
             user=request.user,
-
             food_name=food_name,
-
             calories=calories
-
         )
-
 
         return JsonResponse({
 
@@ -214,8 +186,288 @@ def add_meal(request):
 
         })
 
+    except Exception as error:
+
+        return JsonResponse({
+
+            "success": False,
+
+            "message": str(error)
+
+        })
+
+
+# =========================
+# SCAN FOOD WITH ROBOFLOW
+# =========================
+
+@csrf_exempt
+def scan_food(request):
+
+    if request.method != "POST":
+
+        return JsonResponse({
+            "success": False,
+            "message": "POST request required."
+        })
+
+
+    # =========================
+    # CHECK LOGIN
+    # =========================
+
+    if not request.user.is_authenticated:
+
+        return JsonResponse({
+            "success": False,
+            "message": "Please login first."
+        })
+
+
+    # =========================
+    # GET IMAGE
+    # =========================
+
+    image = request.FILES.get("image")
+
+    if not image:
+
+        return JsonResponse({
+            "success": False,
+            "message": "Please upload an image."
+        })
+
+
+    # =========================
+    # GET ROBOFLOW API KEY
+    # =========================
+
+    api_key = os.environ.get("ROBOFLOW_API_KEY")
+
+    if not api_key:
+
+        return JsonResponse({
+            "success": False,
+            "message": "Roboflow API key not found."
+        })
+
+
+    try:
+
+        # =========================
+        # READ IMAGE
+        # =========================
+
+        image_bytes = image.read()
+
+
+        # =========================
+        # CONVERT IMAGE TO BASE64
+        # =========================
+
+        image_base64 = base64.b64encode(
+            image_bytes
+        ).decode("utf-8")
+
+
+        # =========================
+        # ROBOFLOW WORKFLOW
+        # =========================
+
+        endpoint = (
+            "https://serverless.roboflow.com/"
+            "afifahs-workspace/"
+            "workflows/"
+            "foods-project-vfoods-project-pl16z-3-yolo11n-t1-logic"
+        )
+
+
+        # =========================
+        # REQUEST DATA
+        # =========================
+
+        payload = {
+
+            "api_key": api_key,
+
+            "inputs": {
+
+                "image": {
+
+                    "type": "base64",
+
+                    "value": image_base64
+
+                }
+
+            }
+
+        }
+
+
+        # =========================
+        # SEND TO ROBOFLOW
+        # =========================
+
+        response = requests.post(
+
+            endpoint,
+
+            headers={
+                "Content-Type": "application/json"
+            },
+
+            json=payload,
+
+            timeout=60
+
+        )
+
+
+        # =========================
+        # GET RESPONSE
+        # =========================
+
+        result = response.json()
+
+
+        print("================================")
+        print("🤖 ROBOFLOW RESPONSE")
+        print(result)
+        print("================================")
+
+
+        # =========================
+        # CHECK ROBOFLOW STATUS
+        # =========================
+
+        if response.status_code != 200:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message": "Roboflow request failed.",
+
+                "status_code": response.status_code,
+
+                "roboflow": result
+
+            })
+
+
+        # =========================
+        # GET PREDICTIONS
+        # =========================
+
+        predictions = (
+
+            result[0]
+
+            .get("predictions", {})
+
+            .get("predictions", [])
+
+        )
+
+
+        # =========================
+        # NO FOOD FOUND
+        # =========================
+
+        if not predictions:
+
+            return JsonResponse({
+
+                "success": False,
+
+                "message": "No food detected."
+
+            })
+
+
+        # =========================
+        # GET FIRST PREDICTION
+        # =========================
+
+        prediction = predictions[0]
+
+
+        food_name = prediction.get(
+            "class",
+            "Unknown"
+        )
+
+
+        confidence = round(
+
+            prediction.get(
+                "confidence",
+                0
+            ) * 100,
+
+            2
+
+        )
+
+
+        # =========================
+        # CALORIES
+        # =========================
+
+        calories_map = {
+
+            "Coffee": 5
+
+        }
+
+
+        calories = calories_map.get(
+
+            food_name,
+
+            0
+
+        )
+
+
+        # =========================
+        # SEND RESULT TO FRONTEND
+        # =========================
+
+        return JsonResponse({
+
+            "success": True,
+
+            "food_name": food_name,
+
+            "confidence": confidence,
+
+            "calories": calories
+
+        })
+
+
+    except requests.exceptions.RequestException as error:
+
+        print("❌ Roboflow connection error:")
+        print(error)
+
+        return JsonResponse({
+
+            "success": False,
+
+            "message": "Cannot connect to Roboflow.",
+
+            "error": str(error)
+
+        })
+
 
     except Exception as error:
+
+        print("❌ Scan error:")
+        print(error)
 
         return JsonResponse({
 

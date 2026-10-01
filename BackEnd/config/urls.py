@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from api.views import (signup,login_user,add_meal)
+from api.views import (signup,login_user,add_meal,scan_food)
 
 
 urlpatterns = [
@@ -29,6 +29,8 @@ urlpatterns = [
     path('api/login/',login_user),
 
     path('api/add-meal/',add_meal),
+
+    path('api/scan-food/',scan_food),
 
     path("", include("scanner.urls")),
 
